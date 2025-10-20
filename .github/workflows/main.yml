@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  packages: write
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -16,12 +20,12 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v6.0.0
         with:
-          python-version: 3.14
+          python-version: 3.12
 
       - name: Install dependecies
         run : |
           python -m pip install --upgrade pip
-          python -m pip install pyqt6 ultralytics
+          python -m pip install pyqt6 ultralytics pyinstaller
 
       - name: Build the .exe
         run: |
@@ -43,18 +47,9 @@ jobs:
           name: image-archiver.exe
           path: .
       - name: Github release
-        uses: elgohr/Github-Release-Action@v5
+        uses: softprops/action-gh-release@v2.4.1
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          title: "Image archiver"
-          workdir: dist
-        
-    
-    
-
-    
-  
-
-    
-  
+          name: "Image archiver-${{ github.ref_name }}"
+          files: ./image-archiver.exe
