@@ -1,0 +1,60 @@
+name: Build .exe and release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+
+      - name: Set up python
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: 3.14
+
+      - name: Install dependecies
+        run : |
+          python -m pip install --upgrade pip
+          python -m pip install pyqt6 ultralytics
+
+      - name: Build the .exe
+        run: |
+          pyinstaller --onefile main.py --name image-archiver --noconsole
+
+      - name: Save artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: image-archiver.exe
+          path: dist/image-archiver.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v5.0.0
+        with:
+          name: image-archiver.exe
+          path: .
+      - name: Github release
+        uses: elgohr/Github-Release-Action@v5
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          title: "Image archiver"
+          workdir: dist
+        
+    
+    
+
+    
+  
+
+    
+  
