@@ -29,18 +29,13 @@ jobs:
 
       - name: Build the .exe
         run: |
-          pyinstaller --onedir main.py --name image-archiver --noconsole
-
-      - name: Zip the folder
-        run: |
-          Compress-Archive -Path dist/image-archiver -DestinationPath dist/image-archiver.zip
-          
+          pyinstaller --onefile main.py --name image-archiver --noconsole --collect-all torch
 
       - name: Save artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: image-archiver.zip
-          path: dist/image-archiver.zip
+          name: image-archiver.exe
+          path: dist/image-archiver.exe
 
   release:
     needs: build
@@ -49,7 +44,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v5.0.0
         with:
-          name: image-archiver.zip
+          name: image-archiver.exe
           path: .
       - name: Github release
         uses: softprops/action-gh-release@v2.4.1
@@ -57,4 +52,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: "Image archiver-${{ github.ref_name }}"
-          files: ./image-archiver.zip
+          files: ./image-archiver.exe

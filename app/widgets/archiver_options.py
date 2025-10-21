@@ -1,5 +1,7 @@
 from common import *
 import os
+import shutil
+import hashlib
 
 class ArchiverOptions(QWidget):
     image_selected = pyqtSignal(str) 
@@ -7,13 +9,14 @@ class ArchiverOptions(QWidget):
     preview_clicked = pyqtSignal()
 
 
-    def __init__(self, state_manager, detector):
+    def __init__(self, state_manager, detector,database_manager):
         super().__init__()
         layout = QVBoxLayout()
 
         self.state_manager = state_manager
+        self.database_manager = database_manager
         self.detector = detector
-        self.files = []
+        self.current_folder = ""
         
         self.load_folder = QPushButton("Load folder")
         self.load_model = QPushButton("Load model")
@@ -56,7 +59,7 @@ class ArchiverOptions(QWidget):
 
         self.setLayout(layout)
         
-        self.load_folder.clicked.connect(self.open_folder)
+        self.load_folder.clicked.connect(self.select_folder)
         self.load_model.clicked.connect(self.emit_model_path)
         self.start_processing.clicked.connect(self.process_folder)
         self.preview.clicked.connect(self.preview_clicked.emit)
@@ -73,23 +76,54 @@ class ArchiverOptions(QWidget):
         else:
             model_path = model_path + "-" + task + ".pt"
             self.model_selected.emit(model_path)
-            
+    
+    def copy_folder(self, files):
+        os.makedirs("./images",exist_ok=True)
+        copied_files = []
+        
+        for file in files:
+            if file.lower().endswith((".jpg",".jpeg",".png")):
+                hasher = hashlib.md5()
+                name, ext = os.path.splitext(file)
+                ext = ext.lower()
+                with open(file, "rb") as f:
+                    while chunk := f.read(8192):
+                        hasher.update(chunk)
+                    hash = hasher.hexdigest()
+                shutil.copy(file,os.path.join("images", f"{hash}{ext}"))
+                copied_files.append(os.path.join("images", f"{hash}{ext}"))
+        return copied_files
 
 
-    def open_folder(self):
-        self.files = []
-        folder = QFileDialog.getExistingDirectory(self, "Select image folder")
+    def select_folder(self):
+        self.current_folder = QFileDialog.getExistingDirectory(self, "Select image folder")
+
+    def open_folder(self,folder_path):
+        files = []
+        folder = self.current_folder
+        
         for file in os.listdir(folder):
             if file.lower().endswith((".jpg",".jpeg",".png")):
-                self.files.append(os.path.join(folder,file))
+                files.append(os.path.join(folder,file))
+        return files
         
 
     def process_folder(self):
         self.state_manager.processing_running = True
-        for file in self.files:
+        og_files = self.open_folder(self.current_folder)
+        files = self.copy_folder(og_files)
+        
+        for file in files:
+            name = os.path.basename(file)
             self.detector.run_detection(file)
             results = self.state_manager.results
-            print(results)
+            boxes,scores,classes = results
+            for i in range(len(boxes)):
+                x1,y1,x2,y2 = boxes[i]
+                score = scores[i]
+                cls = classes[i]
+                self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],self.state_manager.conf, float(x1),float(y1),float(x2),float(y2))
+            
         self.state_manager.processing_running = False
 
 

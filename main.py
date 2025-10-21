@@ -4,6 +4,7 @@ from app import MainWindow
 import sys
 from PyQt6.QtWidgets import QApplication
 from state_manager import StateManager
+from database_manager import DatabaseManager
 
 
 def main():
@@ -11,8 +12,9 @@ def main():
     screen = QApplication.primaryScreen().availableGeometry()
 
     state_manager = StateManager()
+    database_manager = DatabaseManager()
 
-    window = MainWindow(screen.width(),screen.height(),state_manager)
+    window = MainWindow(screen.width(),screen.height(),state_manager, database_manager)
     window.show()
     app.exec()
 

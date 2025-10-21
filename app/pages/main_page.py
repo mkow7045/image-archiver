@@ -6,7 +6,7 @@ from app.widgets import ArchiverOptions
 
 
 class MainPage(QWidget):
-    def __init__(self,state_manager):
+    def __init__(self,state_manager,database_manager):
         super().__init__()
         self.state_manager = state_manager
         conf = 0.25 # do zmiany
@@ -19,7 +19,7 @@ class MainPage(QWidget):
         layout_preview_page.addWidget(self.options, stretch=3)
         preview_page.setLayout(layout_preview_page)
 
-        self.archiver_options = ArchiverOptions(state_manager,self.detector)
+        self.archiver_options = ArchiverOptions(state_manager,self.detector,database_manager)
 
         self.stack = QStackedWidget()
         self.stack.addWidget(preview_page)
