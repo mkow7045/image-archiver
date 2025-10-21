@@ -122,7 +122,7 @@ class ArchiverOptions(QWidget):
                 x1,y1,x2,y2 = boxes[i]
                 score = scores[i]
                 cls = classes[i]
-                self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],self.state_manager.conf, float(x1),float(y1),float(x2),float(y2))
+                self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],int(score), float(x1),float(y1),float(x2),float(y2))
             
         self.state_manager.processing_running = False
 
