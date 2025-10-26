@@ -3,6 +3,7 @@ from app.widgets import ImagePreview
 from app.widgets import ImageOptions
 from detectors import YOLODetector
 from app.widgets import ArchiverOptions
+from .archiver_page import Archiver
 
 
 class MainPage(QWidget):
@@ -12,6 +13,7 @@ class MainPage(QWidget):
         conf = 0.25 # do zmiany
         self.detector = YOLODetector("yolov8n.pt",conf,state_manager)
         layout_preview_page = QHBoxLayout()
+        layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
         self.options = ImageOptions(state_manager)
         preview_page = QWidget()
@@ -20,10 +22,18 @@ class MainPage(QWidget):
         preview_page.setLayout(layout_preview_page)
 
         self.archiver_options = ArchiverOptions(state_manager,self.detector,database_manager)
+        self.archiver_main = Archiver(state_manager, database_manager)
+        archiver_page = QWidget()
+        layout_archiver_page.addWidget(self.archiver_main, stretch=7)
+        layout_archiver_page.addWidget(self.archiver_options, stretch=3)
+        archiver_page.setLayout(layout_archiver_page)
+        
+
+       
 
         self.stack = QStackedWidget()
         self.stack.addWidget(preview_page)
-        self.stack.addWidget(self.archiver_options)
+        self.stack.addWidget(archiver_page)
 
         main_layout = QHBoxLayout()
         main_layout.addWidget(self.stack)

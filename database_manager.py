@@ -30,17 +30,33 @@ class DatabaseManager:
         self.conn.commit()
 
     def choose_from_db(self,filter_yes,filter_no):
-        query = "SELECT * FROM images WHERE("
-        for cls in filter_yes:
-            query += f" class_name = '{cls}' OR "
-        query = query[:-3]
-        query += ") AND "
-        query += "class_name NOT IN ("
-        for cls in filter_no:
-            query +=  f" '{cls}',"
-        query = query[:-1]
-        query += ")"
+        query = "SELECT * FROM images"
+        if filter_yes:
+            query += " WHERE("
+            for cls in filter_yes:
+                query += f" class_name = '{cls}' OR "
+                query = query[:-3]
+                query += ")"
+                if filter_no:
+                    query += " AND "
+                    query += "class_name NOT IN ("
+                    for cls in filter_no:
+                        query +=  f" '{cls}',"
+                        query = query[:-1]
+                        query += ")"
+        if filter_no:
+            query += " WHERE("
+            query += "class_name NOT IN ("
+            for cls in filter_no:
+                query +=  f" '{cls}',"
+                query = query[:-1]
+                query += ")"
+
+        print(query)
+
         self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+        return rows
 
     def __del__(self):
         self.conn.close()
