@@ -65,7 +65,7 @@ class ImageOptions(QWidget):
         model_path = base_name + size
 
         if(task == "normal"):
-            self.state_manager.model_path = model_path + ".pt"
+            self.state_manager.model_name = model_path + ".pt"
             
         else:
             model_path = model_path + "-" + task + ".pt"

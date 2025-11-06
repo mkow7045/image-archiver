@@ -27,7 +27,7 @@ class Archiver(QWidget):
                 filter_yes.append(filter)
 
         rows = self.database_manager.choose_from_db(filter_yes,filter_no)
-        image_list = [os.path.join("images",row[1]) for row in rows]
+        image_list = [os.path.join("images",row[0]) for row in rows]
         image_list = list(dict.fromkeys(image_list))
         self.gallery.update_images(image_list)
 

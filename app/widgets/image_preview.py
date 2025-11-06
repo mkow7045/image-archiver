@@ -49,7 +49,7 @@ class ImagePreview(QWidget):
             score = scores[i]
             rect = QRect(int(x1),int(y1),int(x2),int(y2))
             painter.drawRect(rect)
-            painter.drawText(int(x1),int(y1), f"{self.state_manager.class_names[int(cls)]}: {score}")
+            painter.drawText(int(x1),int(y1)+20, f"{self.state_manager.class_names[int(cls)]}: {score}")
         modified_pixmap = self.pixmap.scaled(
                     self.label.width(),
                     self.label.height(),

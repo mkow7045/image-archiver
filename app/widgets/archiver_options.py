@@ -71,11 +71,11 @@ class ArchiverOptions(QWidget):
         model_path = base_name + size
 
         if(task == "normal"):
-            model_path = model_path + ".pt"
-            self.model_selected.emit(model_path)
+            self.state_manager.model_name = model_path + ".pt"
+            
         else:
             model_path = model_path + "-" + task + ".pt"
-            self.model_selected.emit(model_path)
+            self.state_manager.model_name = model_path
     
     def copy_folder(self, files):
         os.makedirs("./images",exist_ok=True)

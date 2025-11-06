@@ -30,27 +30,25 @@ class DatabaseManager:
         self.conn.commit()
 
     def choose_from_db(self,filter_yes,filter_no):
-        query = "SELECT * FROM images"
+        query = "SELECT name FROM images GROUP BY name HAVING"
         if filter_yes:
-            query += " WHERE("
             for cls in filter_yes:
-                query += f" class_name = '{cls}' OR "
-                query = query[:-3]
-                query += ")"
-                if filter_no:
-                    query += " AND "
-                    query += "class_name NOT IN ("
-                    for cls in filter_no:
-                        query +=  f" '{cls}',"
-                        query = query[:-1]
-                        query += ")"
+                query += " SUM("
+                query += f" class_name = '{cls}'"
+                query += ") >= 1"
+                query += " AND "
+            
+        
+
         if filter_no:
-            query += " WHERE("
-            query += "class_name NOT IN ("
             for cls in filter_no:
-                query +=  f" '{cls}',"
-                query = query[:-1]
-                query += ")"
+                query += " SUM("
+                query += f" class_name = '{cls}'"
+                query += ") = 0"
+                query += " AND "
+            
+
+        query = query[:-4]
 
         print(query)
 
