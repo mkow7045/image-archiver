@@ -17,5 +17,6 @@ git clone https://github.com/mkow7045/image-archiver.git
 cd image-archiver
 pip install PyQt6 ultralytics
 python main.py
+```
 
 <img width="1144" height="792" alt="obraz" src="https://github.com/user-attachments/assets/c1db40e1-708a-413d-8c3e-bed5fccbabb6" />
