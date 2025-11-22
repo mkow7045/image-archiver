@@ -50,6 +50,9 @@ class DatabaseManager:
 
         query = query[:-4]
 
+        if not filter_yes and not filter_no:
+            query = "SELECT name FROM images"
+
         print(query)
 
         self.cursor.execute(query)
