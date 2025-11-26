@@ -17,10 +17,9 @@ class MainPage(QWidget):
         layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
         self.options = ImageOptions(state_manager)
-        single_detection_page = QWidget()
-        layout_single_detection_page.addWidget(self.preview, stretch=7)
-        layout_single_detection_page.addWidget(self.options, stretch=3)
-        single_detection_page.setLayout(layout_single_detection_page)
+
+
+        
 
         self.archiver_options = ArchiverOptions(state_manager,self.detector,database_manager)
         self.archiver_main = Archiver(state_manager, database_manager)
@@ -32,13 +31,18 @@ class MainPage(QWidget):
 
         layout_preview_page = QHBoxLayout()
         preview_page = QWidget()
-        self.preview_options = PreviewOptions(state_manager)
-        layout_preview_page.addWidget(self.preview, strecth=7)
+        self.preview_options = PreviewOptions()
+        layout_preview_page.addWidget(self.preview, stretch=7)
         layout_preview_page.addWidget(self.preview_options, stretch=3)
         preview_page.setLayout(layout_preview_page)
         
 
+        single_detection_page = QWidget()
+        layout_single_detection_page.addWidget(self.preview, stretch=7)
+        layout_single_detection_page.addWidget(self.options, stretch=3)
+        single_detection_page.setLayout(layout_single_detection_page)
        
+
 
         self.stack = QStackedWidget()
         self.stack.addWidget(single_detection_page)

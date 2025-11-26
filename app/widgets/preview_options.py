@@ -3,7 +3,7 @@ from common import *
 class PreviewOptions(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout
+        layout = QVBoxLayout()
 
         self.archiver  = QPushButton("Back to archiver page")
 
