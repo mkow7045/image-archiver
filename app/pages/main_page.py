@@ -6,6 +6,7 @@ from .archiver_page import Archiver
 from app.widgets import PreviewOptions
 
 
+
 class MainPage(QWidget):
     def __init__(self,state_manager,database_manager):
         super().__init__()
@@ -66,8 +67,10 @@ class MainPage(QWidget):
 
     def send_preview_image(self, image):
         self.state_manager.image_path = image
+        self.stack.setCurrentIndex(1)
         self.preview.draw_bounding_boxes(self.database_manager.get_results_from_db(image))
+        
         
 
 
-        self.stack.setCurrentIndex(1)
+        
