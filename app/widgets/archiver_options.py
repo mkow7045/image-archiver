@@ -21,7 +21,6 @@ class ArchiverOptions(QWidget):
         self.load_folder = QPushButton("Load folder")
         self.load_model = QPushButton("Load model")
         self.start_processing = QPushButton("Start processing")
-        self.preview = QPushButton("Back to preview")
     
 
         self.combo_model = QComboBox()
@@ -38,36 +37,25 @@ class ArchiverOptions(QWidget):
         self.combo_model_size.addItem("Extra large", "x")
         self.combo_model_size.setCurrentIndex(0)
 
-        self.combo_model_task = QComboBox()
-        self.combo_model_task.addItem("Detection", "normal")
-        self.combo_model_task.addItem("Classification", "cls")
-        self.combo_model_task.addItem("Instance segmentation", "seg")
-        self.combo_model_task.addItem("Oriented Detection", "obb")
-        self.combo_model_task.addItem("Pose/Keypoints", "pose")
-        self.combo_model_task.setCurrentIndex(0)
-
 
         
 
         layout.addWidget(self.load_folder)
         layout.addWidget(self.combo_model)
         layout.addWidget(self.combo_model_size)
-        layout.addWidget(self.combo_model_task)
         layout.addWidget(self.load_model)
         layout.addWidget(self.start_processing)
-        layout.addWidget(self.preview)
 
         self.setLayout(layout)
         
         self.load_folder.clicked.connect(self.select_folder)
         self.load_model.clicked.connect(self.emit_model_path)
         self.start_processing.clicked.connect(self.process_folder)
-        self.preview.clicked.connect(self.preview_clicked.emit)
 
     def emit_model_path(self):
         base_name = self.combo_model.currentData()
         size = self.combo_model_size.currentData()
-        task = self.combo_model_task.currentData()
+        task = "normal"
         model_path = base_name + size
 
         if(task == "normal"):

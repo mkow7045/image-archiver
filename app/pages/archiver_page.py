@@ -15,6 +15,7 @@ class Archiver(QWidget):
         self.setLayout(self.layout)
 
         self.tag_chooser.returnPressed.connect(self.get_images_from_db)
+        self.get_images_from_db()
         
     def get_images_from_db(self):
         filter_yes = []

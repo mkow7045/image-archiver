@@ -1,6 +1,19 @@
 from common import *
 
+class ClickableLabel(QLabel):
+    clicked = pyqtSignal(str)
+
+    def __init__(self,image_id):
+        super().__init__()
+        self.image_id = image_id
+
+    def mousePressEvent(self, ev):
+        self.clicked.emit(self.image_id)
+        return super().mousePressEvent(ev)
+
 class Gallery(QWidget):
+    thumb_clicked = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         self.layout = QVBoxLayout()
@@ -28,11 +41,12 @@ class Gallery(QWidget):
         col = 0
         max_col = 4
         for image in image_list:
-            label = QLabel()
+            label = ClickableLabel(image)
             pixmap = QPixmap(image)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
             label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
             label.setPixmap(pixmap)
+            label.clicked.connect(self.thumb_clicked)
             thumb_size = 150
             scaled_pixmap = pixmap.scaled(
                     thumb_size,
@@ -41,8 +55,8 @@ class Gallery(QWidget):
                     Qt.TransformationMode.SmoothTransformation
                 )
             label.setPixmap(scaled_pixmap)
-            col += 1
             if(col >= max_col):
                 row += 1
                 col = 0
             self.thumbnails_layout.addWidget(label,row,col)
+            col += 1

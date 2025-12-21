@@ -1,6 +1,5 @@
 from common import *
 from app.widgets import ImagePreview
-from app.widgets import ImageOptions
 from detectors import YOLODetector
 from app.widgets import ArchiverOptions
 from .archiver_page import Archiver
@@ -16,7 +15,6 @@ class MainPage(QWidget):
         layout_single_detection_page = QHBoxLayout()
         layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
-        self.options = ImageOptions(state_manager)
 
 
         
@@ -37,15 +35,8 @@ class MainPage(QWidget):
         preview_page.setLayout(layout_preview_page)
         
 
-        single_detection_page = QWidget()
-        layout_single_detection_page.addWidget(self.preview, stretch=7)
-        layout_single_detection_page.addWidget(self.options, stretch=3)
-        single_detection_page.setLayout(layout_single_detection_page)
-       
-
 
         self.stack = QStackedWidget()
-        self.stack.addWidget(single_detection_page)
         self.stack.addWidget(archiver_page)
         self.stack.addWidget(preview_page)
 
@@ -56,9 +47,9 @@ class MainPage(QWidget):
 
         
         self.archiver_options.preview_clicked.connect(lambda: self.stack.setCurrentIndex(0))
-        self.options.archiver_clicked.connect(lambda: self.stack.setCurrentIndex(1))
-        self.options.detect_clicked.connect(self.send_image_path_to_detector)
         self.state_manager.results_changed.connect(self.send_results_to_detector)
+        self.archiver_main.gallery.thumb_clicked.connect(self.send_preview_image)
+        self.preview_options.back_to_archiver.connect(lambda: self.stack.setCurrentIndex(0))
 
 
     def send_image_path_to_detector(self):
@@ -71,3 +62,10 @@ class MainPage(QWidget):
     def send_results_to_detector(self, results):
         if self.state_manager.processing_running == False:
             self.preview.draw_bounding_boxes(results)
+
+    def send_preview_image(self, image):
+        self.state_manager.image_path = image
+        
+
+
+        self.stack.setCurrentIndex(1)
