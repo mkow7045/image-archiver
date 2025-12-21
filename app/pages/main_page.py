@@ -10,6 +10,7 @@ class MainPage(QWidget):
     def __init__(self,state_manager,database_manager):
         super().__init__()
         self.state_manager = state_manager
+        self.database_manager = database_manager
         conf = 0.25 # do zmiany
         self.detector = YOLODetector("yolov8n.pt",conf,state_manager)
         layout_single_detection_page = QHBoxLayout()
@@ -65,6 +66,7 @@ class MainPage(QWidget):
 
     def send_preview_image(self, image):
         self.state_manager.image_path = image
+        self.preview.draw_bounding_boxes(self.database_manager.get_results_from_db(image))
         
 
 

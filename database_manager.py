@@ -53,11 +53,25 @@ class DatabaseManager:
         if not filter_yes and not filter_no:
             query = "SELECT name FROM images"
 
-        print(query)
 
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
         return rows
+    
+    def get_results_from_db(self,image_path):
+        image_path = image_path[7:]
+        query = "SELECT * FROM images WHERE name = ?"
+        self.cursor.execute(query, (image_path,))
+        rows = self.cursor.fetchall()
+
+        row = rows[0] 
+        boxes = [(row[5],row[6],row[7],row[8])]
+        scores = [row[4]]
+        classes = [row[3]]
+        results = boxes,scores,classes
+        return results
+
+
 
     def __del__(self):
         self.conn.close()
