@@ -53,8 +53,9 @@ class ImagePreview(QWidget):
         scale_y = modified_pixmap.height() / self.pixmap.height()
 
         painter = QPainter(modified_pixmap)
-        pen = QPen(Qt.GlobalColor.red)
+        pen = QPen(self.state_manager.color)
         pen.setWidth(2)
+        painter.setPen(pen)
         for i in range(len(boxes)):
             x1,y1,x2,y2 = boxes[i]
             cls = classes[i]

@@ -3,7 +3,7 @@ from common import *
 class StateManager(QObject):
     results_changed = pyqtSignal(object)
     image_path_changed = pyqtSignal(str)
-    conf_changed = pyqtSignal(str)
+    conf_changed = pyqtSignal(float)
     class_names_changed = pyqtSignal(dict)
     model_name_changed = pyqtSignal(str)
     busy_changed = pyqtSignal(bool)
@@ -12,11 +12,12 @@ class StateManager(QObject):
     def __init__(self):
         super().__init__()
         self._image_path = ""
-        self._conf = ""
+        self._conf = 0.25
         self._class_names = ""
         self._model_name = ""
         self._results = ""
         self._busy = False
+        self.color = Qt.GlobalColor.black
         self._processing_running = False
 
     @property

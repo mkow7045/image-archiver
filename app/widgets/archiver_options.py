@@ -7,6 +7,7 @@ class ArchiverOptions(QWidget):
     image_selected = pyqtSignal(str) 
     model_selected = pyqtSignal(str)
     preview_clicked = pyqtSignal()
+    refresh_page = pyqtSignal()
 
 
     def __init__(self, state_manager, detector,database_manager):
@@ -16,11 +17,22 @@ class ArchiverOptions(QWidget):
         self.state_manager = state_manager
         self.database_manager = database_manager
         self.detector = detector
-        self.current_folder = ""
-        
+
+
+        self.load_file = QPushButton("Load file")
         self.load_folder = QPushButton("Load folder")
         self.load_model = QPushButton("Load model")
-        self.start_processing = QPushButton("Start processing")
+        self.color_picker = QPushButton("Choose bbox color")
+
+
+        self.conf_label = QLabel(f"Confidence: 25%")
+        self.conf_slider = QSlider(Qt.Orientation.Horizontal)
+        self.conf_slider.setMinimum(0)
+        self.conf_slider.setMaximum(100)
+        self.conf_slider.setValue(25)
+        self.conf_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.conf_slider.setTickInterval(10)
+        self.conf_slider.valueChanged.connect(self.update_conf)
     
 
         self.combo_model = QComboBox()
@@ -39,18 +51,30 @@ class ArchiverOptions(QWidget):
 
 
         
-
+        layout.addWidget(self.load_file)
         layout.addWidget(self.load_folder)
         layout.addWidget(self.combo_model)
         layout.addWidget(self.combo_model_size)
+        layout.addWidget(self.conf_label)
+        layout.addWidget(self.conf_slider)
         layout.addWidget(self.load_model)
-        layout.addWidget(self.start_processing)
+        layout.addWidget(self.color_picker)
 
         self.setLayout(layout)
-        
+
+        self.load_file.clicked.connect(self.select_file)
         self.load_folder.clicked.connect(self.select_folder)
         self.load_model.clicked.connect(self.emit_model_path)
-        self.start_processing.clicked.connect(self.process_folder)
+        self.color_picker.clicked.connect(self.get_color)
+
+    def get_color(self):
+        color = QColorDialog.getColor()
+        self.state_manager.color = color
+
+    def update_conf(self, value):
+        self.state_manager.conf = value / 100.0
+        self.conf_label.setText(f"Confidence: {value}%")
+
 
     def emit_model_path(self):
         base_name = self.combo_model.currentData()
@@ -81,14 +105,23 @@ class ArchiverOptions(QWidget):
                 shutil.copy(file,os.path.join("images", f"{hash}{ext}"))
                 copied_files.append(os.path.join("images", f"{hash}{ext}"))
         return copied_files
+    
 
+    def select_file(self):
+        file = QFileDialog.getOpenFileName(self,"Select image")
+        if(file == ""):
+            return
+        self.process_file(file)
 
     def select_folder(self):
-        self.current_folder = QFileDialog.getExistingDirectory(self, "Select image folder")
+        current_folder = QFileDialog.getExistingDirectory(self, "Select image folder")
+        if(current_folder == ""):
+            return
+        self.process_folder(current_folder)
 
     def open_folder(self,folder_path):
         files = []
-        folder = self.current_folder
+        folder = folder_path
         
         for file in os.listdir(folder):
             if file.lower().endswith((".jpg",".jpeg",".png")):
@@ -96,9 +129,9 @@ class ArchiverOptions(QWidget):
         return files
         
 
-    def process_folder(self):
+    def process_folder(self, current_folder):
         self.state_manager.processing_running = True
-        og_files = self.open_folder(self.current_folder)
+        og_files = self.open_folder(current_folder)
         files = self.copy_folder(og_files)
         
         for file in files:
@@ -111,7 +144,25 @@ class ArchiverOptions(QWidget):
                 score = scores[i]
                 cls = classes[i]
                 self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
+            self.refresh_page.emit()
             
+        self.state_manager.processing_running = False
+
+    def process_file(self, file):
+        self.state_manager.processing_running = True
+        file = file[0]
+        copied = self.copy_folder([file])
+        name = os.path.basename(copied[0])
+        print(name)
+        self.detector.run_detection(copied[0])
+        results = self.state_manager.results
+        boxes,scores,classes = results
+        for i in range(len(boxes)):
+                x1,y1,x2,y2 = boxes[i]
+                score = scores[i]
+                cls = classes[i]
+                self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
+        self.refresh_page.emit()
         self.state_manager.processing_running = False
 
 

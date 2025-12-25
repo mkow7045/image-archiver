@@ -16,7 +16,9 @@ class YOLODetector(BaseDetector):
         self.state_manager.model_name_changed.connect(self.set_model)
         
 
-    def set_model(self, model_name, conf=0.25):
+    def set_model(self, model_name, conf=None):
+        if conf==None:
+            conf = self.state_manager.conf
         self.model = YOLO(model_name)
         self.state_manager.model_name = model_name
         print("Model set!")

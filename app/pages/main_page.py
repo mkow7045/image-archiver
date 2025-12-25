@@ -12,8 +12,7 @@ class MainPage(QWidget):
         super().__init__()
         self.state_manager = state_manager
         self.database_manager = database_manager
-        conf = 0.25 # do zmiany
-        self.detector = YOLODetector("yolov8n.pt",conf,state_manager)
+        self.detector = YOLODetector("yolov8n.pt",self.state_manager.conf,state_manager)
         layout_single_detection_page = QHBoxLayout()
         layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
@@ -49,6 +48,7 @@ class MainPage(QWidget):
 
         
         self.archiver_options.preview_clicked.connect(lambda: self.stack.setCurrentIndex(0))
+        self.archiver_options.refresh_page.connect(lambda: self.archiver_main.get_images_from_db())
         self.state_manager.results_changed.connect(self.send_results_to_detector)
         self.archiver_main.gallery.thumb_clicked.connect(self.send_preview_image)
         self.preview_options.back_to_archiver.connect(lambda: self.stack.setCurrentIndex(0))
