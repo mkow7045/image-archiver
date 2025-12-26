@@ -1,8 +1,9 @@
 import sqlite3
 
 class DatabaseManager:
-    def __init__(self):
+    def __init__(self,state_manager):
         super().__init__()
+        self.state_manager = state_manager
         self.conn = sqlite3.connect("archive.db")
         self.cursor = self.conn.cursor()
 
@@ -70,6 +71,42 @@ class DatabaseManager:
         classes = [row[3]]
         results = boxes,scores,classes
         return results
+    
+    def delete_from_db(self, delete_all):
+        filter_yes = self.state_manager.filter_yes
+        filter_no = self.state_manager.filter_no
+        query = "DELETE FROM images WHERE name IN(SELECT name FROM images GROUP BY name HAVING"
+        if filter_yes:
+            for cls in filter_yes:
+                query += " SUM("
+                query += f" class_name = '{cls}'"
+                query += ") >= 1"
+                query += " AND "
+            
+        
+
+        if filter_no:
+            for cls in filter_no:
+                query += " SUM("
+                query += f" class_name = '{cls}'"
+                query += ") = 0"
+                query += " AND "
+            
+
+        query = query[:-4]
+        query += ')'
+
+        if not filter_yes and not filter_no:
+            query = "DELETE FROM images"
+
+        if delete_all:
+            query = "DELETE FROM images"
+
+
+
+        self.cursor.execute(query)
+        self.conn.commit()
+
 
 
 

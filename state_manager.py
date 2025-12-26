@@ -17,6 +17,8 @@ class StateManager(QObject):
         self._model_name = ""
         self._results = ""
         self._busy = False
+        self.filter_yes = []
+        self.filter_no = []
         self.color = Qt.GlobalColor.black
         self._processing_running = False
 

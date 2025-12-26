@@ -28,7 +28,7 @@ class YOLODetector(BaseDetector):
     def run_detection(self,image_path):
         if(image_path and self.state_manager.busy != True):
             self.state_manager.busy = True
-            results = self.model.predict(image_path, save=False, imgsz=640, conf = self.conf, verbose = False)
+            results = self.model.predict(image_path, save=False, imgsz=640, conf = self.state_manager.conf, verbose = False)
             r = results[0]
             boxes = r.boxes.xyxy.cpu().numpy()
             score = r.boxes.conf.cpu().numpy()

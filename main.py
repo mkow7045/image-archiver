@@ -12,7 +12,7 @@ def main():
     screen = QApplication.primaryScreen().availableGeometry()
 
     state_manager = StateManager()
-    database_manager = DatabaseManager()
+    database_manager = DatabaseManager(state_manager)
 
     window = MainWindow(screen.width(),screen.height(),state_manager, database_manager)
     window.show()

@@ -4,6 +4,8 @@ from detectors import YOLODetector
 from app.widgets import ArchiverOptions
 from .archiver_page import Archiver
 from app.widgets import PreviewOptions
+from app.widgets import ExportOptions
+from app.widgets import DatabaseDelete
 
 
 
@@ -16,7 +18,6 @@ class MainPage(QWidget):
         layout_single_detection_page = QHBoxLayout()
         layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
-
 
         
 
@@ -49,10 +50,29 @@ class MainPage(QWidget):
         
         self.archiver_options.preview_clicked.connect(lambda: self.stack.setCurrentIndex(0))
         self.archiver_options.refresh_page.connect(lambda: self.archiver_main.get_images_from_db())
+        self.archiver_options.export_clicked.connect(self.start_export)
+        self.archiver_options.db_delete_clicked.connect(self.start_db_delete)
         self.state_manager.results_changed.connect(self.send_results_to_detector)
         self.archiver_main.gallery.thumb_clicked.connect(self.send_preview_image)
-        self.preview_options.back_to_archiver.connect(lambda: self.stack.setCurrentIndex(0))
+        self.preview_options.back_to_archiver.connect(self.back_to_gallery)
+        self.preview_options.set_local_color.connect(self.apply_local_color)
 
+    def back_to_gallery(self):
+        self.stack.setCurrentIndex(0)
+        self.apply_local_color(self.state_manager.color)
+
+    def apply_local_color(self,color):
+        self.preview.color = color
+        self.preview.draw_bounding_boxes(self.preview.current_results)
+
+    def start_db_delete(self):
+        db_delete = DatabaseDelete(self.database_manager)
+        db_delete.exec()
+        self.archiver_main.get_images_from_db()
+
+    def start_export(self):
+        export = ExportOptions()
+        export.exec()
 
     def send_image_path_to_detector(self):
         self.detector.run_detection(self.state_manager.image_path)

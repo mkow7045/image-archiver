@@ -6,6 +6,7 @@ class Archiver(QWidget):
     def __init__(self, state_manager, database_manager):
         super().__init__()
         self.database_manager = database_manager
+        self.state_manager = state_manager
         self.layout = QVBoxLayout()
         self.tag_chooser = QLineEdit()
         self.tag_chooser.setPlaceholderText("Filter")
@@ -26,6 +27,9 @@ class Archiver(QWidget):
                 filter_no.append(filter[1:])
             else:
                 filter_yes.append(filter)
+
+        self.state_manager.filter_yes = filter_yes
+        self.state_manager.filter_no = filter_no
 
         rows = self.database_manager.choose_from_db(filter_yes,filter_no)
         image_list = [os.path.join("images",row[0]) for row in rows]

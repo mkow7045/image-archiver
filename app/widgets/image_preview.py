@@ -9,6 +9,8 @@ class ImagePreview(QWidget):
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
         self.label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         self.label.setPixmap(self.pixmap)
+        self.color = self.state_manager.color
+        self.current_results = []
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         self.setLayout(layout)
@@ -29,6 +31,7 @@ class ImagePreview(QWidget):
         super().resizeEvent(event)
 
     def set_image(self,path):
+        self.color = self.state_manager.color
         self.pixmap = QPixmap(path)
         modified_pixmap = self.pixmap.scaled(
                     self.label.width(),
@@ -39,6 +42,7 @@ class ImagePreview(QWidget):
         self.label.setPixmap(modified_pixmap)
 
     def draw_bounding_boxes(self,results):
+        self.current_results = results
         boxes,scores,classes = results
         
         
@@ -53,7 +57,7 @@ class ImagePreview(QWidget):
         scale_y = modified_pixmap.height() / self.pixmap.height()
 
         painter = QPainter(modified_pixmap)
-        pen = QPen(self.state_manager.color)
+        pen = QPen(self.color)
         pen.setWidth(2)
         painter.setPen(pen)
         for i in range(len(boxes)):
