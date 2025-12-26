@@ -56,6 +56,13 @@ class MainPage(QWidget):
         self.archiver_main.gallery.thumb_clicked.connect(self.send_preview_image)
         self.preview_options.back_to_archiver.connect(self.back_to_gallery)
         self.preview_options.set_local_color.connect(self.apply_local_color)
+        self.preview_options.delete_selected_image.connect(self.delete_single_image)
+
+
+    def delete_single_image(self):
+        self.database_manager.delete_single(self.state_manager.image_path)
+        self.archiver_main.get_images_from_db()
+        self.back_to_gallery()
 
     def back_to_gallery(self):
         self.stack.setCurrentIndex(0)

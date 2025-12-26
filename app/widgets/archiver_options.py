@@ -118,7 +118,7 @@ class ArchiverOptions(QWidget):
 
     def select_file(self):
         file = QFileDialog.getOpenFileName(self,"Select image")
-        if(file == ""):
+        if file == ('', ''):
             return
         self.process_file(file)
 

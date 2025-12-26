@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 class DatabaseManager:
     def __init__(self,state_manager):
@@ -75,6 +76,7 @@ class DatabaseManager:
     def delete_from_db(self, delete_all):
         filter_yes = self.state_manager.filter_yes
         filter_no = self.state_manager.filter_no
+    
         query = "DELETE FROM images WHERE name IN(SELECT name FROM images GROUP BY name HAVING"
         if filter_yes:
             for cls in filter_yes:
@@ -101,12 +103,31 @@ class DatabaseManager:
 
         if delete_all:
             query = "DELETE FROM images"
-
+            filter_yes = []
+            filter_no = []
+            rows = self.choose_from_db(filter_yes,filter_no)
+        else:
+            rows = self.choose_from_db(filter_yes,filter_no)
 
 
         self.cursor.execute(query)
         self.conn.commit()
 
+        for img in rows:
+            filename = img[0]
+            path = os.path.join("./images",filename)
+
+            if os.path.exists(path):
+                os.remove(path)
+
+    def delete_single(self,image_path):
+        name = os.path.basename(image_path)
+
+        self.cursor.execute("DELETE FROM images WHERE name = ?", (name,))
+        self.conn.commit()
+
+        if os.path.exists(image_path):
+            os.remove(image_path)
 
 
 

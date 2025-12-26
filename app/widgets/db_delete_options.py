@@ -13,7 +13,7 @@ class DatabaseDelete(QDialog):
 
         self.current_selection = QRadioButton("Delete current selection from database")
         self.all_images = QRadioButton("Delete all entires from database")
-        self.accept_choice = QPushButton("DELETE(THIS ACTION IS PERMAMENT!)")
+        self.accept_choice = QPushButton("DELETE(THIS ACTION IS PERMANENT!)")
         self.button_group = QButtonGroup()
         self.button_group.addButton(self.current_selection,1)
         self.button_group.addButton(self.all_images,2)
