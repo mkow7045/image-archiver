@@ -78,7 +78,7 @@ class MainPage(QWidget):
         self.archiver_main.get_images_from_db()
 
     def start_export(self):
-        export = ExportOptions()
+        export = ExportOptions(self.database_manager, self.state_manager)
         export.exec()
 
     def send_image_path_to_detector(self):

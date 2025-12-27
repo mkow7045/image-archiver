@@ -17,6 +17,7 @@ class DatabaseDelete(QDialog):
         self.button_group = QButtonGroup()
         self.button_group.addButton(self.current_selection,1)
         self.button_group.addButton(self.all_images,2)
+        self.current_selection.setChecked(True)
 
         layout.addWidget(self.current_selection)
         layout.addWidget(self.all_images)
