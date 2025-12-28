@@ -43,8 +43,6 @@ class ImagePreview(QWidget):
 
     def draw_bounding_boxes(self,results):
         self.current_results = results
-        boxes,scores,classes = results
-        
         
         modified_pixmap = self.pixmap.scaled(
                     self.label.width(),
@@ -60,17 +58,20 @@ class ImagePreview(QWidget):
         pen = QPen(self.color)
         pen.setWidth(2)
         painter.setPen(pen)
-        for i in range(len(boxes)):
-            x1,y1,x2,y2 = boxes[i]
-            cls = classes[i]
-            score = scores[i]
-            x1 *= scale_x
-            x2 *= scale_x
-            y1 *= scale_y
-            y2 *= scale_y
-            rect = QRect(int(x1),int(y1),int(x2),int(y2))
-            painter.drawRect(rect)
-            painter.drawText(int(x1),int(y1)+20, f"{cls}: {score}")
+
+        for result in results:
+            boxes,scores,classes = result
+            for i in range(len(boxes)):
+                x1,y1,x2,y2 = boxes[i]
+                cls = classes[i]
+                score = scores[i]
+                x1 *= scale_x
+                x2 *= scale_x
+                y1 *= scale_y
+                y2 *= scale_y
+                rect = QRect(int(x1),int(y1),int(x2),int(y2))
+                painter.drawRect(rect)
+                painter.drawText(int(x1),int(y1)+20, f"{cls}: {score}")
 
         painter.end()
         self.label.setPixmap(modified_pixmap)

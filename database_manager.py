@@ -65,12 +65,15 @@ class DatabaseManager:
         query = "SELECT * FROM images WHERE name = ?"
         self.cursor.execute(query, (image_path,))
         rows = self.cursor.fetchall()
+        results = []
 
-        row = rows[0] 
-        boxes = [(row[5],row[6],row[7],row[8])]
-        scores = [row[4]]
-        classes = [row[3]]
-        results = boxes,scores,classes
+        for row in rows:
+            boxes = [(row[5],row[6],row[7],row[8])]
+            scores = [row[4]]
+            classes = [row[3]]
+            result = boxes,scores,classes
+            results.append(result)
+        
         return results
     
     def delete_from_db(self, delete_all):
@@ -128,6 +131,22 @@ class DatabaseManager:
 
         if os.path.exists(image_path):
             os.remove(image_path)
+
+    def get_classes_for_single(self,image_path):
+        name = os.path.basename(image_path[0])
+
+        self.cursor.execute("SELECT * FROM images WHERE name = ?", (name,))
+
+        rows = self.cursor.fetchall()
+        
+        classes = []
+        for row in rows:
+            classes.append(row[3])
+
+        return classes
+        
+
+
 
 
 

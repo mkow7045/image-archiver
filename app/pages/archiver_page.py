@@ -21,7 +21,26 @@ class Archiver(QWidget):
     def get_images_from_db(self):
         filter_yes = []
         filter_no = []
+        conf = ""
+        conf_supplied = False
         filters = self.tag_chooser.text().split()
+        if filters:
+            conf = filters[0]
+            if "conf=" in conf:
+                conf = conf[5:]
+            filters = filters[:0] + filters[1:]
+            try:
+                conf = float(conf)
+                if conf < 0.0 or conf > 1.0:
+                    raise ValueError()
+                conf_supplied = True
+            except ValueError:
+                conf_supplied = False
+
+        if conf_supplied:
+            self.state_manager.conf_filter = conf
+
+
         for filter in filters:
             if filter[0] == "-":
                 filter_no.append(filter[1:])

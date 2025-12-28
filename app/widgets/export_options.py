@@ -1,5 +1,8 @@
 from common import *
 from datetime import datetime
+import os
+import shutil
+from zipfile import ZipFile
 
 class ExportOptions(QDialog):
 
@@ -29,7 +32,7 @@ class ExportOptions(QDialog):
         self.num_classes.setMaximum(10)
         self.num_classes.setValue(3)
         self.example_name_info = QLabel("Example name with current settings:")
-        self.example_name = QLabel(f"{self.class_names[0]}_{self.class_names[1]}_{self.class_names[2]}-a1b2c3d4-{datetime.now().strftime("%Y-%m-%d_%H:%M:%S")}.jpg")
+        self.example_name = QLabel(f"{self.class_names[0]}_{self.class_names[1]}_{self.class_names[2]}-a1b2c3d4-{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.jpg")
         self.date_checkbox = QCheckBox("Timestamp?", self)
         self.date_checkbox.setChecked(True)
         self.folder = QRadioButton("Export to folder")
@@ -74,18 +77,47 @@ class ExportOptions(QDialog):
     def perform_export(self):
         selected_entry_amt = self.selection_group.checkedId()
         selected_export_type = self.export_group.checkedId()
+        priority_classes = self.state_manager.filter_yes
+        filter_empty = False
         if selected_entry_amt == 1:
+            if self.state_manager.filter_yes == [] and self.state_manager.filter_no == []:
+                filter_empty = True
             images = self.database_manager.choose_from_db(self.state_manager.filter_yes, self.state_manager.filter_no)
         if selected_entry_amt == 2:
             filter_yes = []
             filter_no = []
+            filter_empty = True
             images = self.database_manager.choose_from_db(filter_yes, filter_no)
 
         if selected_export_type == 1:
-            current_folder = QFileDialog.getExistingDirectory(self, "Select image folder")
+            folder_to_save = QFileDialog.getExistingDirectory(self, "Select image folder")
+            if(folder_to_save == ""):
+                return
+            for file in images:
+                classes = self.database_manager.get_classes_for_single(file)
+                path = os.path.join("images",file[0])
+                filename = self.make_filename(classes,file[0],priority_classes,filter_empty)
+                filename = os.path.join(folder_to_save,filename)
+                shutil.copy(path,filename)
             
         if selected_export_type == 2:
-            pass
+            save_dest, _ = QFileDialog.getSaveFileName(self, "Choose place to save","","Zip files (*.zip)")
+            if(save_dest == ""):
+                return
+            if not save_dest.endswith(".zip"):
+                save_dest += ".zip"
+            file_list = []
+            for file in images:
+                classes = self.database_manager.get_classes_for_single(file)
+                filename = self.make_filename(classes,file[0],priority_classes,filter_empty)
+                path = os.path.join("images",file[0])
+                if (path,filename) not in file_list:
+                    file_list.append((path, filename))
+                
+            with ZipFile(save_dest, "w") as zipf:
+                for file in file_list:
+                    zipf.write(file[0], arcname=file[1])
+
 
 
         self.close()
@@ -111,8 +143,44 @@ class ExportOptions(QDialog):
         text += "a1b2c3d4"
         if self.date_checkbox.isChecked():
             text += "-"
-            text += f"{datetime.now().strftime("%Y-%m-%d_%H:%M:%S")}.jpg"
+            text += f"{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.jpg"
         else:
             text += ".jpg"
 
         self.example_name.setText(text)
+
+    def make_filename(self, classes,og_hash,priority_classes,filter_empty):
+        amount = self.num_classes.value()
+        if amount > len(classes):
+            amount = len(classes)
+        text = ""
+        if not filter_empty:
+            i = 0
+            while amount != 0 and i < len(priority_classes):
+                text += priority_classes[i]
+                text += "_"
+                amount -= 1
+                i += 1
+            
+            text = text[:-1]
+            text += '-'
+
+        i = 0
+        while amount != 0:
+            if classes[i] not in priority_classes:
+                text += classes[i]
+                text += "_"
+                amount -= 1
+                i += 1
+
+        text = text[:-1]
+        text += '-' 
+
+        text += og_hash[:8]
+        if self.date_checkbox.isChecked():
+            text += "-"
+            text += f"{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.jpg"
+        else:
+            text += ".jpg"
+
+        return text
