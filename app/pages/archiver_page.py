@@ -39,7 +39,8 @@ class Archiver(QWidget):
 
         if conf_supplied:
             self.state_manager.conf_filter = conf
-
+        else:
+            self.state_manager.conf_filter = -1
 
         for filter in filters:
             if filter[0] == "-":
@@ -49,8 +50,10 @@ class Archiver(QWidget):
 
         self.state_manager.filter_yes = filter_yes
         self.state_manager.filter_no = filter_no
-
+        
         rows = self.database_manager.choose_from_db(filter_yes,filter_no)
+
+
         image_list = [os.path.join("images",row[0]) for row in rows]
         image_list = list(dict.fromkeys(image_list))
         self.gallery.update_images(image_list)

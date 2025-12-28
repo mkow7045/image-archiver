@@ -21,7 +21,6 @@ class YOLODetector(BaseDetector):
             conf = self.state_manager.conf
         self.model = YOLO(model_name)
         self.state_manager.model_name = model_name
-        print("Model set!")
 
 
 
