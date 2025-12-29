@@ -40,7 +40,7 @@ class Archiver(QWidget):
         if conf_supplied:
             self.state_manager.conf_filter = conf
         else:
-            self.state_manager.conf_filter = -1
+            self.state_manager.conf_filter = 0.0
 
         for filter in filters:
             if filter[0] == "-":

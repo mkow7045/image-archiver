@@ -32,7 +32,7 @@ class DatabaseManager:
         self.conn.commit()
 
     def choose_from_db(self,filter_yes,filter_no):
-        query = "SELECT name FROM images GROUP BY name HAVING"
+        query = f"SELECT name FROM images WHERE conf >={str(self.state_manager.conf_filter)} GROUP BY name HAVING"
         if filter_yes:
             for cls in filter_yes:
                 query += " SUM("
@@ -53,7 +53,7 @@ class DatabaseManager:
         query = query[:-4]
 
         if not filter_yes and not filter_no:
-            query = "SELECT name FROM images"
+            query = f"SELECT name FROM images WHERE conf >={str(self.state_manager.conf_filter)}"
 
 
         self.cursor.execute(query)
@@ -78,9 +78,9 @@ class DatabaseManager:
     
     def delete_from_db(self, delete_all):
         filter_yes = self.state_manager.filter_yes
-        filter_no = self.state_manager.filter_no
+        filter_no = self.state_manager.filter_no 
     
-        query = "DELETE FROM images WHERE name IN(SELECT name FROM images GROUP BY name HAVING"
+        query = f"DELETE FROM images WHERE name IN(SELECT name FROM images GROUP BY name HAVING"
         if filter_yes:
             for cls in filter_yes:
                 query += " SUM("
@@ -102,7 +102,7 @@ class DatabaseManager:
         query += ')'
 
         if not filter_yes and not filter_no:
-            query = "DELETE FROM images"
+            query = f"DELETE FROM images WHERE conf >={str(self.state_manager.conf_filter)}"
 
         if delete_all:
             query = "DELETE FROM images"

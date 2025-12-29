@@ -12,7 +12,6 @@ class YOLODetector(BaseDetector):
         self.state_manager.class_names = self.model.names
         self.state_manager.model_name = model_name
 
-
         self.state_manager.model_name_changed.connect(self.set_model)
         
 

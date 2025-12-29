@@ -10,6 +10,7 @@ class ArchiverOptions(QWidget):
     refresh_page = pyqtSignal()
     export_clicked = pyqtSignal()
     db_delete_clicked = pyqtSignal()
+    query_builder_clicked = pyqtSignal()
 
 
     def __init__(self, state_manager, detector, database_manager):
@@ -27,6 +28,7 @@ class ArchiverOptions(QWidget):
         self.color_picker = QPushButton("Choose bbox color")
         self.export_options = QPushButton("Export options")
         self.delete_from_db = QPushButton("Delete selection from database")
+        self.query_builder = QPushButton("Query builder")
 
 
         self.conf_label = QLabel(f"Confidence: 25%")
@@ -65,6 +67,7 @@ class ArchiverOptions(QWidget):
         layout.addWidget(self.color_picker)
         layout.addWidget(self.export_options)
         layout.addWidget(self.delete_from_db)
+        layout.addWidget(self.query_builder)
 
         self.setLayout(layout)
 
@@ -74,6 +77,7 @@ class ArchiverOptions(QWidget):
         self.color_picker.clicked.connect(self.get_color)
         self.export_options.clicked.connect(lambda: self.export_clicked.emit())
         self.delete_from_db.clicked.connect(lambda: self.db_delete_clicked.emit())
+        self.query_builder.clicked.connect(lambda: self.query_builder_clicked.emit())
 
     def get_color(self):
         color = QColorDialog.getColor()
@@ -91,12 +95,10 @@ class ArchiverOptions(QWidget):
         task = "normal"
         model_path = base_name + size
 
-        if(task == "normal"):
-            self.state_manager.model_name = model_path + ".pt"
+
+        self.state_manager.model_name = model_path + ".pt"
             
-        else:
-            model_path = model_path + "-" + task + ".pt"
-            self.state_manager.model_name = model_path
+
     
     def copy_folder(self, files):
         os.makedirs("./images",exist_ok=True)

@@ -6,6 +6,7 @@ from .archiver_page import Archiver
 from app.widgets import PreviewOptions
 from app.widgets import ExportOptions
 from app.widgets import DatabaseDelete
+from app.widgets import QueryBuilder
 
 
 
@@ -57,6 +58,7 @@ class MainPage(QWidget):
         self.preview_options.back_to_archiver.connect(self.back_to_gallery)
         self.preview_options.set_local_color.connect(self.apply_local_color)
         self.preview_options.delete_selected_image.connect(self.delete_single_image)
+        self.archiver_options.query_builder_clicked.connect(self.open_query_builder)
 
 
     def delete_single_image(self):
@@ -80,6 +82,10 @@ class MainPage(QWidget):
     def start_export(self):
         export = ExportOptions(self.database_manager, self.state_manager)
         export.exec()
+    
+    def open_query_builder(self):
+        builder = QueryBuilder(self.state_manager)
+        builder.exec()
 
     def send_image_path_to_detector(self):
         self.detector.run_detection(self.state_manager.image_path)
