@@ -84,8 +84,11 @@ class MainPage(QWidget):
         export.exec()
     
     def open_query_builder(self):
-        builder = QueryBuilder(self.state_manager)
+        builder = QueryBuilder(self.state_manager,self.database_manager)
+        builder.query_ready.connect(lambda text: self.archiver_main.tag_chooser.setText(text))
         builder.exec()
+        self.archiver_main.get_images_from_db()
+        
 
     def send_image_path_to_detector(self):
         self.detector.run_detection(self.state_manager.image_path)

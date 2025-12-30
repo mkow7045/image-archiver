@@ -144,9 +144,11 @@ class DatabaseManager:
             classes.append(row[3])
 
         return classes
-        
-
-
+    
+    def get_class_names(self):
+        self.cursor.execute("SELECT class_name, COUNT(*) FROM images GROUP BY class_name ORDER BY COUNT(*) DESC")
+        results = self.cursor.fetchall()
+        return results
 
 
 

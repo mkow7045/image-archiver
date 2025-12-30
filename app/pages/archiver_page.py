@@ -28,7 +28,7 @@ class Archiver(QWidget):
             conf = filters[0]
             if "conf=" in conf:
                 conf = conf[5:]
-            filters = filters[:0] + filters[1:]
+                filters = filters[:0] + filters[1:]
             try:
                 conf = float(conf)
                 if conf < 0.0 or conf > 1.0:
