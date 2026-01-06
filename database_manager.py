@@ -79,45 +79,17 @@ class DatabaseManager:
     def delete_from_db(self, delete_all):
         filter_yes = self.state_manager.filter_yes
         filter_no = self.state_manager.filter_no 
-    
-        query = f"DELETE FROM images WHERE name IN(SELECT name FROM images GROUP BY name HAVING"
-        if filter_yes:
-            for cls in filter_yes:
-                query += " SUM("
-                query += f" class_name = '{cls}'"
-                query += ") >= 1"
-                query += " AND "
-            
-        
-
-        if filter_no:
-            for cls in filter_no:
-                query += " SUM("
-                query += f" class_name = '{cls}'"
-                query += ") = 0"
-                query += " AND "
-            
-
-        query = query[:-4]
-        query += ')'
-
-        if not filter_yes and not filter_no:
-            query = f"DELETE FROM images WHERE conf >={str(self.state_manager.conf_filter)}"
 
         if delete_all:
-            query = "DELETE FROM images"
             filter_yes = []
             filter_no = []
             rows = self.choose_from_db(filter_yes,filter_no)
         else:
             rows = self.choose_from_db(filter_yes,filter_no)
 
-
-        self.cursor.execute(query)
-        self.conn.commit()
-
         for img in rows:
             filename = img[0]
+            self.delete_single(filename)
             path = os.path.join("./images",filename)
 
             if os.path.exists(path):

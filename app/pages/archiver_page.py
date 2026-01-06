@@ -1,6 +1,7 @@
 from common import *
 from app.widgets import Gallery
 import os
+import shlex
 
 class Archiver(QWidget):
     def __init__(self, state_manager, database_manager):
@@ -23,7 +24,8 @@ class Archiver(QWidget):
         filter_no = []
         conf = ""
         conf_supplied = False
-        filters = self.tag_chooser.text().split()
+        filters = shlex.split(self.tag_chooser.text())
+
         if filters:
             conf = filters[0]
             if "conf=" in conf:

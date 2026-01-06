@@ -7,6 +7,8 @@ class SignalCheckBox(QCheckBox):
         text = f"{img_class[0]} ({img_class[1]})"
         super().__init__(text)
         self.img_class = img_class[0]
+        if " " in self.img_class:
+            self.img_class = '"' + self.img_class + '"'
         self.stateChanged.connect(self.state_changed)
 
     def state_changed(self, state):
@@ -23,6 +25,8 @@ class SignalCheckBoxNegative(QCheckBox):
         text = f"-{img_class[0]} ({img_class[1]})"
         super().__init__(text)
         self.img_class = f"-{img_class[0]}"
+        if " " in self.img_class:
+            self.img_class = '"' + self.img_class + '"'
         self.stateChanged.connect(self.state_changed)
 
     def state_changed(self, state):
