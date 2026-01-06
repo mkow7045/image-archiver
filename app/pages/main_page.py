@@ -58,7 +58,7 @@ class MainPage(QWidget):
         self.preview_options.back_to_archiver.connect(self.back_to_gallery)
         self.preview_options.set_local_color.connect(self.apply_local_color)
         self.preview_options.delete_selected_image.connect(self.delete_single_image)
-        self.archiver_options.query_builder_clicked.connect(self.open_query_builder)
+        self.archiver_main.query_builder_clicked.connect(self.open_query_builder)
 
 
     def delete_single_image(self):

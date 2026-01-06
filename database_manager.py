@@ -121,6 +121,24 @@ class DatabaseManager:
         self.cursor.execute("SELECT class_name, COUNT(*) FROM images GROUP BY class_name ORDER BY COUNT(*) DESC")
         results = self.cursor.fetchall()
         return results
+    
+
+    def get_info_for_images(self, images):
+        if not images:
+            return []
+        query = "SELECT name, model_name, class_name, conf, x1, y1, x2, y2 FROM images WHERE name IN "
+        image_query = "("
+        for image in images:
+            image_query = image_query + f"'{image[0]}',"
+
+        image_query = image_query[:-1]
+        image_query = image_query + ")"
+
+        query = query + image_query
+
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+        return rows
 
 
 

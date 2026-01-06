@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import shutil
 from zipfile import ZipFile
+import csv
 
 class ExportOptions(QDialog):
 
@@ -73,6 +74,7 @@ class ExportOptions(QDialog):
         self.num_classes.valueChanged.connect(self.num_class_changed)
         self.accept_export.clicked.connect(self.perform_export)
         self.date_checkbox.stateChanged.connect(self.num_class_changed)
+        self.export_csv.clicked.connect(self.perform_csv_export)
 
     def perform_export(self):
         selected_entry_amt = self.selection_group.checkedId()
@@ -184,3 +186,38 @@ class ExportOptions(QDialog):
             text += ".jpg"
 
         return text
+    
+
+    def perform_csv_export(self):
+        selected_entry_amt = self.selection_group.checkedId()
+        priority_classes = self.state_manager.filter_yes
+        filter_empty = False
+        if selected_entry_amt == 1:
+            if self.state_manager.filter_yes == [] and self.state_manager.filter_no == []:
+                filter_empty = True
+            images = self.database_manager.choose_from_db(self.state_manager.filter_yes, self.state_manager.filter_no)
+        if selected_entry_amt == 2:
+            filter_yes = []
+            filter_no = []
+            filter_empty = True
+            images = self.database_manager.choose_from_db(filter_yes, filter_no)
+
+            
+        save_dest, _ = QFileDialog.getSaveFileName(self, "Choose place to save","","CSV files (*.csv)")
+        if(save_dest == ""):
+            return
+        if not save_dest.endswith(".csv"):
+            save_dest += ".csv"
+
+        rows = self.database_manager.get_info_for_images(images)
+        with open(save_dest, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+
+            writer.writerow(['name','model_name','class_name','conf','x1','y1','x2','y2'])
+            writer.writerows(rows)
+
+        self.close()
+        
+
+
+            

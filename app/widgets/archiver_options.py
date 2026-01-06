@@ -10,7 +10,6 @@ class ArchiverOptions(QWidget):
     refresh_page = pyqtSignal()
     export_clicked = pyqtSignal()
     db_delete_clicked = pyqtSignal()
-    query_builder_clicked = pyqtSignal()
 
 
     def __init__(self, state_manager, detector, database_manager):
@@ -21,14 +20,24 @@ class ArchiverOptions(QWidget):
         self.database_manager = database_manager
         self.detector = detector
 
-
+        detector_group = QGroupBox("Detector configuration")
+        detector_group_layout = QVBoxLayout()
+        detector_group.setLayout(detector_group_layout)
+        processing_group = QGroupBox("Processing configuration")
+        processing_group_layout = QVBoxLayout()
+        processing_group.setLayout(processing_group_layout)
+        visual_group = QGroupBox("Visual options")
+        visual_group_layout = QVBoxLayout()
+        visual_group.setLayout(visual_group_layout)
+        db_group = QGroupBox("Database opeartions")
+        db_group_layout = QVBoxLayout()
+        db_group.setLayout(db_group_layout)
         self.load_file = QPushButton("Load file")
         self.load_folder = QPushButton("Load folder")
         self.load_model = QPushButton("Load model")
         self.color_picker = QPushButton("Choose bbox color")
         self.export_options = QPushButton("Export options")
         self.delete_from_db = QPushButton("Delete selection from database")
-        self.query_builder = QPushButton("Query builder")
 
 
         self.conf_label = QLabel(f"Confidence: 25%")
@@ -57,17 +66,21 @@ class ArchiverOptions(QWidget):
 
 
         
-        layout.addWidget(self.load_file)
-        layout.addWidget(self.load_folder)
-        layout.addWidget(self.combo_model)
-        layout.addWidget(self.combo_model_size)
-        layout.addWidget(self.conf_label)
-        layout.addWidget(self.conf_slider)
-        layout.addWidget(self.load_model)
-        layout.addWidget(self.color_picker)
-        layout.addWidget(self.export_options)
-        layout.addWidget(self.delete_from_db)
-        layout.addWidget(self.query_builder)
+        processing_group_layout.addWidget(self.load_file)
+        processing_group_layout.addWidget(self.load_folder)
+        detector_group_layout.addWidget(self.combo_model)
+        detector_group_layout.addWidget(self.combo_model_size)
+        detector_group_layout.addWidget(self.load_model)
+        processing_group_layout.addWidget(self.conf_label)
+        processing_group_layout.addWidget(self.conf_slider)
+        visual_group_layout.addWidget(self.color_picker)
+        db_group_layout.addWidget(self.export_options)
+        db_group_layout.addWidget(self.delete_from_db)
+
+        layout.addWidget(processing_group)
+        layout.addWidget(detector_group)
+        layout.addWidget(visual_group)
+        layout.addWidget(db_group)
 
         self.setLayout(layout)
 
@@ -77,7 +90,6 @@ class ArchiverOptions(QWidget):
         self.color_picker.clicked.connect(self.get_color)
         self.export_options.clicked.connect(lambda: self.export_clicked.emit())
         self.delete_from_db.clicked.connect(lambda: self.db_delete_clicked.emit())
-        self.query_builder.clicked.connect(lambda: self.query_builder_clicked.emit())
 
     def get_color(self):
         color = QColorDialog.getColor()
@@ -144,9 +156,18 @@ class ArchiverOptions(QWidget):
         self.state_manager.processing_running = True
         og_files = self.open_folder(current_folder)
         files = self.copy_folder(og_files)
+
+        progress = QProgressDialog("Starting processing",None, 0,len(files), self)
+        progress.show()
+
+        progress_bar_num=1
         
         for file in files:
             name = os.path.basename(file)
+            progress.setLabelText(f"Processing file: {name}")
+            progress_bar_num += 1
+            progress.setValue(progress_bar_num)
+            QApplication.processEvents()
             self.detector.run_detection(file)
             results = self.state_manager.results
             boxes,scores,classes = results
@@ -156,7 +177,8 @@ class ArchiverOptions(QWidget):
                 cls = classes[i]
                 self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
             self.refresh_page.emit()
-            
+        
+        progress.close()
         self.state_manager.processing_running = False
 
     def process_file(self, file):

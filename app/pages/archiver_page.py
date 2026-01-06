@@ -4,6 +4,8 @@ import os
 import shlex
 
 class Archiver(QWidget):
+    query_builder_clicked = pyqtSignal()
+
     def __init__(self, state_manager, database_manager):
         super().__init__()
         self.database_manager = database_manager
@@ -11,12 +13,19 @@ class Archiver(QWidget):
         self.layout = QVBoxLayout()
         self.tag_chooser = QLineEdit()
         self.tag_chooser.setPlaceholderText("Filter")
+        self.query_builder = QPushButton("Query Builder")
+        self.top_bar = QWidget()
+        self.top_bar_layout = QHBoxLayout()
+        self.top_bar.setLayout(self.top_bar_layout)
+        self.top_bar_layout.addWidget(self.query_builder)
+        self.top_bar_layout.addWidget(self.tag_chooser)
         self.gallery = Gallery()
-        self.layout.addWidget(self.tag_chooser)
+        self.layout.addWidget(self.top_bar)
         self.layout.addWidget(self.gallery)
         self.setLayout(self.layout)
 
         self.tag_chooser.returnPressed.connect(self.get_images_from_db)
+        self.query_builder.clicked.connect(lambda: self.query_builder_clicked.emit())
         self.get_images_from_db()
         
     def get_images_from_db(self):
