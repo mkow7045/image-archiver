@@ -7,6 +7,7 @@ from app.widgets import PreviewOptions
 from app.widgets import ExportOptions
 from app.widgets import DatabaseDelete
 from app.widgets import QueryBuilder
+from app.widgets import ModelOptions
 
 
 
@@ -59,6 +60,7 @@ class MainPage(QWidget):
         self.preview_options.set_local_color.connect(self.apply_local_color)
         self.preview_options.delete_selected_image.connect(self.delete_single_image)
         self.archiver_main.query_builder_clicked.connect(self.open_query_builder)
+        self.archiver_options.model_options_clicked.connect(self.open_model_options)
 
 
     def delete_single_image(self):
@@ -82,6 +84,10 @@ class MainPage(QWidget):
     def start_export(self):
         export = ExportOptions(self.database_manager, self.state_manager)
         export.exec()
+
+    def open_model_options(self):
+        model_options = ModelOptions(self.database_manager, self.state_manager)
+        model_options.exec()
     
     def open_query_builder(self):
         builder = QueryBuilder(self.state_manager,self.database_manager)

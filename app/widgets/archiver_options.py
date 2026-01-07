@@ -10,6 +10,7 @@ class ArchiverOptions(QWidget):
     refresh_page = pyqtSignal()
     export_clicked = pyqtSignal()
     db_delete_clicked = pyqtSignal()
+    model_options_clicked = pyqtSignal()
 
 
     def __init__(self, state_manager, detector, database_manager):
@@ -20,9 +21,6 @@ class ArchiverOptions(QWidget):
         self.database_manager = database_manager
         self.detector = detector
 
-        detector_group = QGroupBox("Detector configuration")
-        detector_group_layout = QVBoxLayout()
-        detector_group.setLayout(detector_group_layout)
         processing_group = QGroupBox("Processing configuration")
         processing_group_layout = QVBoxLayout()
         processing_group.setLayout(processing_group_layout)
@@ -34,51 +32,22 @@ class ArchiverOptions(QWidget):
         db_group.setLayout(db_group_layout)
         self.load_file = QPushButton("Load file")
         self.load_folder = QPushButton("Load folder")
-        self.load_model = QPushButton("Load model")
         self.color_picker = QPushButton("Choose bbox color")
         self.export_options = QPushButton("Export options")
         self.delete_from_db = QPushButton("Delete selection from database")
+        self.model_options = QPushButton("Model options")
 
-
-        self.conf_label = QLabel(f"Confidence: 25%")
-        self.conf_slider = QSlider(Qt.Orientation.Horizontal)
-        self.conf_slider.setMinimum(0)
-        self.conf_slider.setMaximum(100)
-        self.conf_slider.setValue(25)
-        self.conf_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.conf_slider.setTickInterval(10)
-        self.conf_slider.valueChanged.connect(self.update_conf)
-    
-
-        self.combo_model = QComboBox()
-        self.combo_model.addItem("YOLOv8", "yolov8")
-        self.combo_model.addItem("YOLOv11", "yolo11")
-        self.combo_model.addItem("YOLOv12", "yolo12")
-        self.combo_model.setCurrentIndex(0)
-
-        self.combo_model_size = QComboBox()
-        self.combo_model_size.addItem("Nano", "n")
-        self.combo_model_size.addItem("Small", "s")
-        self.combo_model_size.addItem("Medium", "m")
-        self.combo_model_size.addItem("Large", "l")
-        self.combo_model_size.addItem("Extra large", "x")
-        self.combo_model_size.setCurrentIndex(0)
 
 
         
         processing_group_layout.addWidget(self.load_file)
         processing_group_layout.addWidget(self.load_folder)
-        detector_group_layout.addWidget(self.combo_model)
-        detector_group_layout.addWidget(self.combo_model_size)
-        detector_group_layout.addWidget(self.load_model)
-        processing_group_layout.addWidget(self.conf_label)
-        processing_group_layout.addWidget(self.conf_slider)
+        processing_group_layout.addWidget(self.model_options)
         visual_group_layout.addWidget(self.color_picker)
         db_group_layout.addWidget(self.export_options)
         db_group_layout.addWidget(self.delete_from_db)
 
         layout.addWidget(processing_group)
-        layout.addWidget(detector_group)
         layout.addWidget(visual_group)
         layout.addWidget(db_group)
 
@@ -86,10 +55,10 @@ class ArchiverOptions(QWidget):
 
         self.load_file.clicked.connect(self.select_file)
         self.load_folder.clicked.connect(self.select_folder)
-        self.load_model.clicked.connect(self.emit_model_path)
         self.color_picker.clicked.connect(self.get_color)
         self.export_options.clicked.connect(lambda: self.export_clicked.emit())
         self.delete_from_db.clicked.connect(lambda: self.db_delete_clicked.emit())
+        self.model_options.clicked.connect(lambda: self.model_options_clicked.emit())
 
     def get_color(self):
         color = QColorDialog.getColor()

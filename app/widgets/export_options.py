@@ -190,8 +190,6 @@ class ExportOptions(QDialog):
 
     def perform_csv_export(self):
         selected_entry_amt = self.selection_group.checkedId()
-        priority_classes = self.state_manager.filter_yes
-        filter_empty = False
         if selected_entry_amt == 1:
             if self.state_manager.filter_yes == [] and self.state_manager.filter_no == []:
                 filter_empty = True
