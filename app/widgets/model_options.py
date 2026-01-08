@@ -131,14 +131,16 @@ class ModelOptions(QDialog):
         
 
         if selected_option == 1:
-            self.options_widget_layout.addWidget(self.conf_label)
-            self.options_widget_layout.addWidget(self.conf_slider)
             self.options_widget_layout.addWidget(self.combo_model)
             self.options_widget_layout.addWidget(self.combo_model_size)
+            self.options_widget_layout.addWidget(self.conf_label)
+            self.options_widget_layout.addWidget(self.conf_slider)
             self.options_widget_layout.addWidget(self.accept_model_yolo)
 
         if selected_option == 2:
             self.options_widget_layout.addWidget(self.combo_rcnn)
+            self.options_widget_layout.addWidget(self.conf_label)
+            self.options_widget_layout.addWidget(self.conf_slider)
             self.options_widget_layout.addWidget(self.accept_model_rcnn)
 
         if selected_option == 3:

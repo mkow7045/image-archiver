@@ -62,7 +62,10 @@ class MainPage(QWidget):
         self.preview_options.delete_selected_image.connect(self.delete_single_image)
         self.archiver_main.query_builder_clicked.connect(self.open_query_builder)
         self.archiver_options.model_options_clicked.connect(self.open_model_options)
-
+        self.archiver_options.detection_start.connect(self.run_detection)
+    
+    def run_detection(self,file):
+        self.detector.run_detection(file)
 
     def delete_single_image(self):
         self.database_manager.delete_single(self.state_manager.image_path)

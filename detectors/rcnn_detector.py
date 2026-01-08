@@ -63,18 +63,13 @@ class RCNNDetector(BaseDetector):
                 boxes = outputs["boxes"].cpu().numpy()
                 scores = outputs["scores"].cpu().numpy()
                 classes = outputs["labels"].cpu().numpy()
-                print(f"Raw classes from model: {classes[:5]}")  # First 5
-                print(f"Class names dict keys: {list(self.state_manager.class_names.keys())[:20]}")
 
                 filter = ((classes > 0) & (scores > self.state_manager.conf))
 
                 boxes = boxes[filter]
                 scores = scores[filter]
                 classes = classes[filter]
-                print(f"After filter, before shift: {classes[:5]}")
-                classes = classes - 1
-                print(f"After shift: {classes[:5]}")
-                print(f"Mapped names: {[self.state_manager.class_names.get(int(c), 'UNKNOWN') for c in classes[:5]]}")
+
             
                 self.state_manager.results = (boxes,scores,classes)
 

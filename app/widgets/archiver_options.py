@@ -11,6 +11,7 @@ class ArchiverOptions(QWidget):
     export_clicked = pyqtSignal()
     db_delete_clicked = pyqtSignal()
     model_options_clicked = pyqtSignal()
+    detection_start = pyqtSignal(str)
 
 
     def __init__(self, state_manager, detector, database_manager):
@@ -19,7 +20,6 @@ class ArchiverOptions(QWidget):
 
         self.state_manager = state_manager
         self.database_manager = database_manager
-        self.detector = detector
 
         processing_group = QGroupBox("Processing configuration")
         processing_group_layout = QVBoxLayout()
@@ -140,7 +140,7 @@ class ArchiverOptions(QWidget):
             progress_bar_num += 1
             progress.setValue(progress_bar_num)
             QApplication.processEvents()
-            self.detector.run_detection(file)
+            self.detection_start.emit(file)
             results = self.state_manager.results
             boxes,scores,classes = results
             for i in range(len(boxes)):
@@ -158,7 +158,7 @@ class ArchiverOptions(QWidget):
         file = file[0]
         copied = self.copy_folder([file])
         name = os.path.basename(copied[0])
-        self.detector.run_detection(copied[0])
+        self.detection_start.emit(copied[0])
         results = self.state_manager.results
         boxes,scores,classes = results
         for i in range(len(boxes)):
