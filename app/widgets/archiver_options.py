@@ -37,11 +37,14 @@ class ArchiverOptions(QWidget):
         self.delete_from_db = QPushButton("Delete selection from database")
         self.model_options = QPushButton("Model options")
 
+        self.model_label = QLabel(f"Model loaded: {self.state_manager.model_name}")
+
 
 
         
         processing_group_layout.addWidget(self.load_file)
         processing_group_layout.addWidget(self.load_folder)
+        processing_group_layout.addWidget(self.model_label)
         processing_group_layout.addWidget(self.model_options)
         visual_group_layout.addWidget(self.color_picker)
         db_group_layout.addWidget(self.export_options)
@@ -155,7 +158,6 @@ class ArchiverOptions(QWidget):
         file = file[0]
         copied = self.copy_folder([file])
         name = os.path.basename(copied[0])
-        print(name)
         self.detector.run_detection(copied[0])
         results = self.state_manager.results
         boxes,scores,classes = results
@@ -166,6 +168,10 @@ class ArchiverOptions(QWidget):
                 self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
         self.refresh_page.emit()
         self.state_manager.processing_running = False
+
+    
+    def set_model_label(self):
+        self.model_label.setText(f"Model loaded: {os.path.basename(self.state_manager.model_name)}")
 
 
 

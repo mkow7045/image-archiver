@@ -8,6 +8,7 @@ from app.widgets import ExportOptions
 from app.widgets import DatabaseDelete
 from app.widgets import QueryBuilder
 from app.widgets import ModelOptions
+from detectors import RCNNDetector
 
 
 
@@ -87,7 +88,21 @@ class MainPage(QWidget):
 
     def open_model_options(self):
         model_options = ModelOptions(self.database_manager, self.state_manager)
+        model_options.change_to_rcnn.connect(self.load_rcnn_model)
+        model_options.change_to_yolo.connect(self.load_yolo_model)
         model_options.exec()
+        self.archiver_options.set_model_label()
+
+    def load_rcnn_model(self,model_name):
+        if(isinstance(self.detector, YOLODetector)):
+            self.detector = RCNNDetector(model_name,self.state_manager)
+        self.detector.set_model(model_name)
+
+    def load_yolo_model(self,model_name):
+        if(isinstance(self.detector, RCNNDetector)):
+            self.detector = YOLODetector(model_name, self.state_manager.conf, self.state_manager)
+        self.detector.set_model(model_name)
+
     
     def open_query_builder(self):
         builder = QueryBuilder(self.state_manager,self.database_manager)

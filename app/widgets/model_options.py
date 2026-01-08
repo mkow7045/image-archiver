@@ -1,6 +1,8 @@
 from common import *
 
 class ModelOptions(QDialog):
+    change_to_rcnn = pyqtSignal(str)
+    change_to_yolo = pyqtSignal()
 
     def __init__(self, database_manager, state_manager, parent=None):
         super().__init__(parent)
@@ -21,14 +23,12 @@ class ModelOptions(QDialog):
         self.menus_layout = QHBoxLayout()
         self.menus.setLayout(self.menus_layout)
 
-        self.yolo_menu = QRadioButton("YOLO models (Ultralytics COCO)")
-        self.rcnn_menu = QRadioButton("Faster R-CNN (Resnet)")
+        self.yolo_menu = QRadioButton("YOLO models (COCO)")
+        self.rcnn_menu = QRadioButton("R-CNN (COCO)")
         self.custom_menu = QRadioButton("Custom (Ultralytics)")
         self.yolo_menu.setChecked(True)
 
         self.accept_model_yolo = QPushButton("Load model")
-
-        self.rcnn_label = QLabel("Faster R-CNN RESNET model will be loaded.")
 
         self.menus_layout.addWidget(self.yolo_menu)
         self.menus_layout.addWidget(self.rcnn_menu)
@@ -41,7 +41,7 @@ class ModelOptions(QDialog):
         self.menu_group = QButtonGroup()
         self.menu_group.addButton(self.yolo_menu,1)
         self.menu_group.addButton(self.rcnn_menu,2)
-        self.menu_group.addButton(self.custom_menu,2)
+        self.menu_group.addButton(self.custom_menu,3)
 
 
         self.options_widget = QWidget()
@@ -72,6 +72,14 @@ class ModelOptions(QDialog):
         self.combo_model_size.addItem("Extra large", "x")
         self.combo_model_size.setCurrentIndex(0)
 
+        self.combo_rcnn = QComboBox()
+        self.combo_rcnn.addItem("fasterrcnn_resnet50", "fasterrcnn_resnet50")
+        self.combo_rcnn.addItem("fasterrcnn_mobilenet", "fasterrcnn_mobilenet")
+        self.combo_rcnn.addItem("retinanet_resnet50", "retinanet_resnet50")
+        self.combo_rcnn.setCurrentIndex(0)
+
+        self.accept_model_rcnn = QPushButton("Load model")
+
 
         self.options_widget_layout.addWidget(self.conf_label)
         self.options_widget_layout.addWidget(self.conf_slider)
@@ -90,7 +98,8 @@ class ModelOptions(QDialog):
         
         self.accept_model_yolo.clicked.connect(self.emit_yolo_model_path)
         self.menu_group.buttonToggled.connect(self.change_options)
-        self.accept_custom_yolo.connect(self.load_custom_yolo)
+        self.accept_custom_yolo.clicked.connect(self.load_custom_yolo)
+        self.accept_model_rcnn.clicked.connect(self.emit_rcnn_model_path)
 
     def update_conf(self, value):
         self.state_manager.conf = value / 100.0
@@ -101,8 +110,15 @@ class ModelOptions(QDialog):
         size = self.combo_model_size.currentData()
         model_path = base_name + size
 
-
+        
         self.state_manager.model_name = model_path + ".pt"
+        self.change_to_yolo.emit(model_path + ".pt")
+        self.close()
+
+    def emit_rcnn_model_path(self):
+        model_name = self.combo_rcnn.currentData()
+
+        self.change_to_rcnn.emit(model_name)
         self.close()
 
     def change_options(self):
@@ -122,7 +138,8 @@ class ModelOptions(QDialog):
             self.options_widget_layout.addWidget(self.accept_model_yolo)
 
         if selected_option == 2:
-            self.options_widget_layout.addWidget(self.rcnn_label)
+            self.options_widget_layout.addWidget(self.combo_rcnn)
+            self.options_widget_layout.addWidget(self.accept_model_rcnn)
 
         if selected_option == 3:
             self.options_widget_layout.addWidget(self.conf_label)
@@ -130,5 +147,10 @@ class ModelOptions(QDialog):
             self.options_widget_layout.addWidget(self.accept_custom_yolo)
 
     def load_custom_yolo(self):
-        model_path, _ = QFileDialog.getSaveFileName(self, "Choose place to save","","CSV files (*.csv)")
-        self.state_manager.model_name = model_path + ".pt"
+        model_path, _ = QFileDialog.getOpenFileName(self, "Choose a model","","Ultralytics models (*.pt)")
+        if(model_path == ""):
+            return
+        
+        self.state_manager.model_name = model_path
+
+        self.close()
