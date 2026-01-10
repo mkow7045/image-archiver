@@ -130,6 +130,7 @@ class ArchiverOptions(QWidget):
         files = self.copy_folder(og_files)
 
         progress = QProgressDialog("Starting processing",None, 0,len(files), self)
+        progress.setWindowTitle("Processing files")
         progress.show()
 
         progress_bar_num=1
@@ -148,13 +149,17 @@ class ArchiverOptions(QWidget):
                 score = scores[i]
                 cls = classes[i]
                 self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
-            self.refresh_page.emit()
-        
+            
+        self.refresh_page.emit()
         progress.close()
         self.state_manager.processing_running = False
 
     def process_file(self, file):
         self.state_manager.processing_running = True
+        progress = QProgressDialog("Starting processing",None, 0,0, self)
+        progress.setWindowTitle("Processing files")
+        progress.show()
+        QApplication.processEvents()
         file = file[0]
         copied = self.copy_folder([file])
         name = os.path.basename(copied[0])
@@ -166,6 +171,7 @@ class ArchiverOptions(QWidget):
                 score = scores[i]
                 cls = classes[i]
                 self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
+        progress.close()
         self.refresh_page.emit()
         self.state_manager.processing_running = False
 
