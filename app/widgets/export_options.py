@@ -77,15 +77,15 @@ class ExportOptions(QDialog):
         self.export_csv.clicked.connect(self.perform_csv_export)
 
     def perform_export(self):
-        selected_entry_amt = self.selection_group.checkedId()
+        selected_entry = self.selection_group.checkedId()
         selected_export_type = self.export_group.checkedId()
         priority_classes = self.state_manager.filter_yes
         filter_empty = False
-        if selected_entry_amt == 1:
+        if selected_entry == 1:
             if self.state_manager.filter_yes == [] and self.state_manager.filter_no == []:
                 filter_empty = True
             images = self.database_manager.choose_from_db(self.state_manager.filter_yes, self.state_manager.filter_no)
-        if selected_entry_amt == 2:
+        if selected_entry == 2:
             filter_yes = []
             filter_no = []
             filter_empty = True

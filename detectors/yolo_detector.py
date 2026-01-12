@@ -1,12 +1,11 @@
-from .base_detector import BaseDetector
 from ultralytics import YOLO
 from common import *
 
 
-class YOLODetector(BaseDetector):
+class YOLODetector():
 
     def __init__(self, model_name, conf,state_manager):
-        super().__init__(model_name)
+        self.model_name = model_name
         self.conf = conf
         self.state_manager = state_manager
         self.model = YOLO(model_name)

@@ -1,13 +1,12 @@
-from .base_detector import BaseDetector
 from common import *
 import torch
 from torchvision import transforms
 from torchvision.models.detection import fasterrcnn_resnet50_fpn_v2, FasterRCNN_ResNet50_FPN_V2_Weights, fasterrcnn_mobilenet_v3_large_fpn, FasterRCNN_MobileNet_V3_Large_FPN_Weights, retinanet_resnet50_fpn, RetinaNet_ResNet50_FPN_Weights
 from PIL import Image
 
-class RCNNDetector(BaseDetector):
+class RCNNDetector():
     def __init__(self,model_name,state_manager):
-        super().__init__(model_name)
+        self.model_name = model_name
         self.state_manager = state_manager
         self.model_name = model_name
 
