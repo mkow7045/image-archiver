@@ -4,9 +4,8 @@ from common import *
 
 class YOLODetector():
 
-    def __init__(self, model_name, conf,state_manager):
+    def __init__(self, model_name,state_manager):
         self.model_name = model_name
-        self.conf = conf
         self.state_manager = state_manager
         self.model = YOLO(model_name)
         self.state_manager.class_names = self.model.names

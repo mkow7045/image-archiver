@@ -17,7 +17,7 @@ class MainPage(QWidget):
         super().__init__()
         self.state_manager = state_manager
         self.database_manager = database_manager
-        self.detector = YOLODetector("yolov8n.pt",self.state_manager.conf,state_manager)
+        self.detector = YOLODetector("yolov8n.pt",state_manager)
         layout_single_detection_page = QHBoxLayout()
         layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
