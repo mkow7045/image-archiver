@@ -5,10 +5,12 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from state_manager import StateManager
 from database_manager import DatabaseManager
+import qdarkstyle
 
 
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt6())
     screen = QApplication.primaryScreen().availableGeometry()
 
     state_manager = StateManager()
