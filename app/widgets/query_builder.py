@@ -144,11 +144,15 @@ class QueryBuilder(QDialog):
                 if self.filter_chooser.text().lower():
                     if class_tuple[0].lower().startswith(filter):
                         checkbox = SignalCheckBox(class_tuple)
+                        if class_tuple[0] in self.filter_yes_set:
+                            checkbox.setChecked(True)
                         checkbox.clicked.connect(self.checkbox_pos_clicked)
                         checkbox.unclicked.connect(self.checkbox_pos_unclicked)
                         area_layout.addWidget(checkbox)
                 else:
                     checkbox = SignalCheckBox(class_tuple)
+                    if class_tuple[0] in self.filter_yes_set:
+                            checkbox.setChecked(True)
                     checkbox.clicked.connect(self.checkbox_pos_clicked)
                     checkbox.unclicked.connect(self.checkbox_pos_unclicked)
                     area_layout.addWidget(checkbox)
@@ -157,11 +161,15 @@ class QueryBuilder(QDialog):
                 if self.filter_chooser.text().lower():
                     if class_tuple[0].lower().startswith(filter):
                         checkbox = SignalCheckBoxNegative(class_tuple)
+                        if ('-' + class_tuple[0]) in self.filter_no_set:
+                            checkbox.setChecked(True)
                         checkbox.clicked.connect(self.checkbox_neg_clicked)
                         checkbox.unclicked.connect(self.checkbox_neg_unclicked)
                         area_layout.addWidget(checkbox)
                 else:
                     checkbox = SignalCheckBoxNegative(class_tuple)
+                    if ('-' + class_tuple[0]) in self.filter_no_set:
+                        checkbox.setChecked(True)
                     checkbox.clicked.connect(self.checkbox_neg_clicked)
                     checkbox.unclicked.connect(self.checkbox_neg_unclicked)
                     area_layout.addWidget(checkbox)

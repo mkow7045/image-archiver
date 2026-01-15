@@ -76,7 +76,6 @@ class ArchiverOptions(QWidget):
     def emit_model_path(self):
         base_name = self.combo_model.currentData()
         size = self.combo_model_size.currentData()
-        task = "normal"
         model_path = base_name + size
 
 

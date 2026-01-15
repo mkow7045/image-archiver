@@ -191,13 +191,10 @@ class ExportOptions(QDialog):
     def perform_csv_export(self):
         selected_entry_amt = self.selection_group.checkedId()
         if selected_entry_amt == 1:
-            if self.state_manager.filter_yes == [] and self.state_manager.filter_no == []:
-                filter_empty = True
             images = self.database_manager.choose_from_db(self.state_manager.filter_yes, self.state_manager.filter_no)
         if selected_entry_amt == 2:
             filter_yes = []
             filter_no = []
-            filter_empty = True
             images = self.database_manager.choose_from_db(filter_yes, filter_no)
 
             

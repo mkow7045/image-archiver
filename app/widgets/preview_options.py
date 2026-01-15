@@ -24,7 +24,7 @@ class PreviewOptions(QWidget):
                                         }
                                         
             QPushButton:hover {
-                background-color: #962a31;
+                background-color: #f03737;
                                         }
                 
                                         """)
