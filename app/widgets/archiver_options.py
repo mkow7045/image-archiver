@@ -14,7 +14,7 @@ class ArchiverOptions(QWidget):
     detection_start = pyqtSignal(str)
 
 
-    def __init__(self, state_manager, detector, database_manager):
+    def __init__(self, state_manager,detector, database_manager):
         super().__init__()
         layout = QVBoxLayout()
 
@@ -30,23 +30,54 @@ class ArchiverOptions(QWidget):
         db_group = QGroupBox("Database opeartions")
         db_group_layout = QVBoxLayout()
         db_group.setLayout(db_group_layout)
-        self.load_file = QPushButton("Load file")
-        self.load_folder = QPushButton("Load folder")
-        self.color_picker = QPushButton("Choose bbox color")
+        self.load_button = QToolButton()
+        self.load_button.setText("Load")
+        self.load_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        self.load_menu = QMenu(self)
+        load_file = QAction("Load file", self)
+        load_folder = QAction("Load folder", self)
+        
+
+        load_file.triggered.connect(self.select_file)
+        load_folder.triggered.connect(self.select_folder)
+
+        self.load_menu.addAction(load_file)
+        self.load_menu.addAction(load_folder)
+
+        self.load_button.setMenu(self.load_menu)
+
+        self.dark = QRadioButton("Dark mode")
+        self.light = QRadioButton("Light mode")
+        self.dark.setChecked(True)
+        
+
+        self.selection_group = QButtonGroup()
+        self.selection_group.addButton(self.dark,1)
+        self.selection_group.addButton(self.light,2)
+
+        self.colors = QWidget()
+        self.colors_layout = QHBoxLayout()
+
+        self.colors_layout.addWidget(self.dark)
+        self.colors_layout.addWidget(self.light)
+
+        self.colors.setLayout(self.colors_layout)
+
+
+        self.color_picker = QPushButton("Choose bounding box color")
         self.export_options = QPushButton("Export options")
         self.delete_from_db = QPushButton("Delete selection from database")
         self.model_options = QPushButton("Model options")
 
         self.model_label = QLabel(f"Model loaded: {self.state_manager.model_name}")
 
-
-
         
-        processing_group_layout.addWidget(self.load_file)
-        processing_group_layout.addWidget(self.load_folder)
+        processing_group_layout.addWidget(self.load_button)
         processing_group_layout.addWidget(self.model_label)
         processing_group_layout.addWidget(self.model_options)
         visual_group_layout.addWidget(self.color_picker)
+        visual_group_layout.addWidget(self.colors)
         db_group_layout.addWidget(self.export_options)
         db_group_layout.addWidget(self.delete_from_db)
 
@@ -56,12 +87,25 @@ class ArchiverOptions(QWidget):
 
         self.setLayout(layout)
 
-        self.load_file.clicked.connect(self.select_file)
-        self.load_folder.clicked.connect(self.select_folder)
+        self.load_button.clicked.connect(self.show_load_menu)
         self.color_picker.clicked.connect(self.get_color)
         self.export_options.clicked.connect(lambda: self.export_clicked.emit())
         self.delete_from_db.clicked.connect(lambda: self.db_delete_clicked.emit())
         self.model_options.clicked.connect(lambda: self.model_options_clicked.emit())
+        self.selection_group.buttonClicked.connect(self.change_theme)
+
+    
+    def change_theme(self):
+        selected_entry = self.selection_group.checkedId()
+        if selected_entry == 1:
+            self.state_manager.theme = "dark"
+        if selected_entry == 2:
+            self.state_manager.theme = "light"
+
+    def show_load_menu(self):
+        self.load_menu.setMinimumWidth(self.load_button.width())
+        button_pos = self.load_button.mapToGlobal(self.load_button.rect().bottomLeft())
+        self.load_menu.exec(button_pos)
 
     def get_color(self):
         color = QColorDialog.getColor()

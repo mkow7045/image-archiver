@@ -7,6 +7,7 @@ class StateManager(QObject):
     class_names_changed = pyqtSignal(dict)
     model_name_changed = pyqtSignal(str)
     busy_changed = pyqtSignal(bool)
+    theme_changed = pyqtSignal(str)
 
 
     def __init__(self):
@@ -22,6 +23,18 @@ class StateManager(QObject):
         self.conf_filter = 0.0
         self.color = Qt.GlobalColor.black
         self._processing_running = False
+        self._theme = "dark"
+        
+    @property
+    def theme(self):
+        return self._theme
+    
+    @theme.setter
+    def theme(self,theme):
+        if self._theme != theme:
+            self._theme = theme
+            self.theme_changed.emit(theme)
+    
 
     @property
     def image_path(self):

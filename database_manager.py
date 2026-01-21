@@ -101,8 +101,6 @@ class DatabaseManager:
         self.cursor.execute("DELETE FROM images WHERE name = ?", (name,))
         self.conn.commit()
 
-        if os.path.exists(image_path):
-            os.remove(image_path)
 
     def get_classes_for_single(self,image_path):
         name = os.path.basename(image_path[0])
