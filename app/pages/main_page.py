@@ -17,7 +17,7 @@ class MainPage(QWidget):
         super().__init__()
         self.state_manager = state_manager
         self.database_manager = database_manager
-        self.detector = YOLODetector("yolov8n.pt",state_manager)
+        self.detector = YOLODetector("yolov8n.pt",state_manager,parent=self)
         layout_single_detection_page = QHBoxLayout()
         layout_archiver_page = QHBoxLayout()
         self.preview = ImagePreview(state_manager)
@@ -34,7 +34,7 @@ class MainPage(QWidget):
 
         layout_preview_page = QHBoxLayout()
         preview_page = QWidget()
-        self.preview_options = PreviewOptions()
+        self.preview_options = PreviewOptions(self.state_manager)
         layout_preview_page.addWidget(self.preview, stretch=7)
         layout_preview_page.addWidget(self.preview_options, stretch=3)
         preview_page.setLayout(layout_preview_page)
@@ -95,6 +95,7 @@ class MainPage(QWidget):
         model_options.change_to_yolo.connect(self.load_yolo_model)
         model_options.exec()
         self.archiver_options.set_model_label()
+        self.archiver_options.update_conf_after_model()
 
     def load_rcnn_model(self,model_name):
         if(isinstance(self.detector, YOLODetector)):
@@ -103,7 +104,7 @@ class MainPage(QWidget):
 
     def load_yolo_model(self,model_name):
         if(isinstance(self.detector, RCNNDetector)):
-            self.detector = YOLODetector(model_name, self.state_manager.conf, self.state_manager)
+            self.detector = YOLODetector(model_name, self.state_manager, parent=self)
         self.detector.set_model(model_name)
 
     

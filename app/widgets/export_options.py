@@ -163,20 +163,23 @@ class ExportOptions(QDialog):
                 text += "_"
                 amount -= 1
                 i += 1
-            
-            text = text[:-1]
-            text += '-'
+            if text:
+                text = text[:-1]
+                text += '-'
 
         i = 0
-        while amount != 0:
+        while amount != 0 and i < len(classes):
             if classes[i] not in priority_classes:
                 text += classes[i]
                 text += "_"
                 amount -= 1
-                i += 1
+            i += 1
 
-        text = text[:-1]
-        text += '-' 
+        if text.endswith('_'):
+            text = text[:-1]
+        
+        if text:
+            text += '-' 
 
         text += og_hash[:8]
         if self.date_checkbox.isChecked():

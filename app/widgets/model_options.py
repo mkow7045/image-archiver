@@ -2,7 +2,7 @@ from common import *
 
 class ModelOptions(QDialog):
     change_to_rcnn = pyqtSignal(str)
-    change_to_yolo = pyqtSignal()
+    change_to_yolo = pyqtSignal(str)
 
     def __init__(self, database_manager, state_manager, parent=None):
         super().__init__(parent)
@@ -61,7 +61,7 @@ class ModelOptions(QDialog):
         self.combo_model = QComboBox()
         self.combo_model.addItem("YOLOv8", "yolov8")
         self.combo_model.addItem("YOLOv11", "yolo11")
-        self.combo_model.addItem("YOLOv12", "yolo12")
+        self.combo_model.addItem("YOLOv26", "yolo26")
         self.combo_model.setCurrentIndex(0)
 
         self.combo_model_size = QComboBox()
@@ -154,5 +154,6 @@ class ModelOptions(QDialog):
             return
         
         self.state_manager.model_name = model_path
+        self.change_to_yolo.emit(model_path)
 
         self.close()

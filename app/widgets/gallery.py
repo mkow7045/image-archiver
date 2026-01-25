@@ -1,5 +1,7 @@
 from common import *
 from math import ceil
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 class GalleryThumb(QLabel):
     clicked = pyqtSignal(str)
@@ -40,6 +42,42 @@ class Gallery(QWidget):
 
         self.setLayout(self.layout)
 
+    def load_image_exif(self,image_path):
+        pixmap = QPixmap(image_path)
+        if pixmap.isNull():
+            return pixmap
+
+        pil_image = Image.open(image_path)
+        if pil_image is None:
+            return pixmap
+        
+        if not hasattr(pil_image, 'getexif'):
+            return pixmap
+        
+        exif = pil_image.getexif()
+        if exif is None:
+            return pixmap
+        
+        orientation_value = exif.get(274, None)
+        if orientation_value is None:
+            return pixmap
+        
+
+        if orientation_value == 3:
+            pil_image = pil_image.rotate(180, expand=True)
+        elif orientation_value == 6:
+            pil_image = pil_image.rotate(270, expand=True)
+        elif orientation_value == 8:
+            pil_image = pil_image.rotate(90, expand=True)
+        else:
+            return pixmap
+        
+        pil_image = pil_image.convert("RGB")
+        data = pil_image.tobytes("raw", "RGB")
+        qimage = QImage(data, pil_image.width, pil_image.height, QImage.Format.Format_RGB888)
+        return QPixmap.fromImage(qimage)
+    
+    
     def update_images(self,image_list):
         self.image_list = image_list
         while self.thumbnails_layout.count():
@@ -53,7 +91,7 @@ class Gallery(QWidget):
         for image in image_list:
             thumb = GalleryThumb(image)
             if image not in self.image_cache:
-                self.image_cache[image] = QPixmap(image)
+                self.image_cache[image] = self.load_image_exif(image)
             pixmap = self.image_cache[image]
             thumb.setAlignment(Qt.AlignmentFlag.AlignCenter) 
             thumb.setFixedSize(self.thumb_size, self.thumb_size)

@@ -73,5 +73,3 @@ class RCNNDetector():
                 self.state_manager.results = (boxes,scores,classes)
 
                 self.state_manager.busy = False
-        else:
-            print("No image")

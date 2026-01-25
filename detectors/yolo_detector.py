@@ -4,13 +4,14 @@ from common import *
 
 class YOLODetector():
 
-    def __init__(self, model_name,state_manager):
+    def __init__(self, model_name,state_manager,parent=None):
         self.model_name = model_name
         self.state_manager = state_manager
         self.model = YOLO(model_name)
         self.state_manager.class_names = self.model.names
         self.state_manager.model_name = model_name
         self.fallback_model = "yolov8n.pt"
+        self.parent = parent
         
 
     def set_model(self, model_name):
@@ -24,7 +25,7 @@ class YOLODetector():
         except Exception as e:
             self.model = YOLO(self.fallback_model)
             model_name = self.fallback_model
-            QMessageBox.critical(self, "Error", "Not compatible model, switching to fallback.")
+            QMessageBox.critical(self.parent, "Error", "Not compatible model, switching to fallback.")
         
         self.state_manager.class_names = self.model.names
         self.state_manager.model_name = model_name
@@ -41,8 +42,7 @@ class YOLODetector():
             classes = r.boxes.cls.cpu().numpy()
             self.state_manager.results = (boxes,score,classes)
             self.state_manager.busy = False
-        else:
-            print("No image loaded!")
+
 
 
         

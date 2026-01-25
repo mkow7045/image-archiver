@@ -8,6 +8,7 @@ class StateManager(QObject):
     model_name_changed = pyqtSignal(str)
     busy_changed = pyqtSignal(bool)
     theme_changed = pyqtSignal(str)
+    conf_bboxes_changed = pyqtSignal()
 
 
     def __init__(self):
@@ -24,6 +25,18 @@ class StateManager(QObject):
         self.color = Qt.GlobalColor.black
         self._processing_running = False
         self._theme = "dark"
+        self.draw_only_selected = False
+        self._conf_bboxes = 0.0
+
+    @property
+    def conf_bboxes(self):
+        return self._conf_bboxes
+    
+    @conf_bboxes.setter
+    def conf_bboxes(self,conf_bboxes):
+        if self._conf_bboxes != conf_bboxes:
+            self._conf_bboxes = conf_bboxes
+            self.conf_bboxes_changed.emit()   
         
     @property
     def theme(self):

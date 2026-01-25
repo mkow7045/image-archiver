@@ -34,6 +34,8 @@ class ArchiverOptions(QWidget):
         self.load_button.setText("Load")
         self.load_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
+        self.draw_selected_only = QCheckBox("Draw only selected classes")
+
         self.load_menu = QMenu(self)
         load_file = QAction("Load file", self)
         load_folder = QAction("Load folder", self)
@@ -50,6 +52,15 @@ class ArchiverOptions(QWidget):
         self.dark = QRadioButton("Dark mode")
         self.light = QRadioButton("Light mode")
         self.dark.setChecked(True)
+
+        self.conf_label = QLabel(f"Confidence: 25%")
+        self.conf_slider = QSlider(Qt.Orientation.Horizontal)
+        self.conf_slider.setMinimum(0)
+        self.conf_slider.setMaximum(100)
+        self.conf_slider.setValue(25)
+        self.conf_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.conf_slider.setTickInterval(10)
+        self.conf_slider.valueChanged.connect(self.update_conf)
         
 
         self.selection_group = QButtonGroup()
@@ -63,9 +74,10 @@ class ArchiverOptions(QWidget):
         self.colors_layout.addWidget(self.light)
 
         self.colors.setLayout(self.colors_layout)
+        
 
 
-        self.color_picker = QPushButton("Choose bounding box color")
+        self.color_picker = QPushButton("Choose bounding box color for all images")
         self.export_options = QPushButton("Export options")
         self.delete_from_db = QPushButton("Delete selection from database")
         self.model_options = QPushButton("Model options")
@@ -76,8 +88,11 @@ class ArchiverOptions(QWidget):
         processing_group_layout.addWidget(self.load_button)
         processing_group_layout.addWidget(self.model_label)
         processing_group_layout.addWidget(self.model_options)
+        processing_group_layout.addWidget(self.conf_label)
+        processing_group_layout.addWidget(self.conf_slider)
         visual_group_layout.addWidget(self.color_picker)
         visual_group_layout.addWidget(self.colors)
+        visual_group_layout.addWidget(self.draw_selected_only)
         db_group_layout.addWidget(self.export_options)
         db_group_layout.addWidget(self.delete_from_db)
 
@@ -93,6 +108,20 @@ class ArchiverOptions(QWidget):
         self.delete_from_db.clicked.connect(lambda: self.db_delete_clicked.emit())
         self.model_options.clicked.connect(lambda: self.model_options_clicked.emit())
         self.selection_group.buttonClicked.connect(self.change_theme)
+        self.draw_selected_only.stateChanged.connect(self.send_draw_selected_only)
+
+    
+    def send_draw_selected_only(self, state):
+        self.state_manager.draw_only_selected = (state == Qt.CheckState.Checked.value)
+        
+
+    def update_conf(self, value):
+        self.state_manager.conf = value / 100.0
+        self.conf_label.setText(f"Confidence: {value}%")
+
+    def update_conf_after_model(self):
+        self.conf_slider.setValue(int(self.state_manager.conf * 100))
+        self.conf_label.setText(f"Confidence: {int(self.state_manager.conf * 100)}%")
 
     
     def change_theme(self):
@@ -180,18 +209,26 @@ class ArchiverOptions(QWidget):
         
         for file in files:
             name = os.path.basename(file)
+            self.database_manager.delete_single(name)
             progress.setLabelText(f"Processing file: {name}")
-            progress_bar_num += 1
+            progress.setMinimumDuration(0)
             progress.setValue(progress_bar_num)
+            progress_bar_num += 1
+            QApplication.processEvents()
             QApplication.processEvents()
             self.detection_start.emit(file)
             results = self.state_manager.results
             boxes,scores,classes = results
-            for i in range(len(boxes)):
-                x1,y1,x2,y2 = boxes[i]
-                score = scores[i]
-                cls = classes[i]
-                self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
+            
+            if len(boxes) == 0:
+                if os.path.exists(file):
+                    os.remove(file)
+            else:
+                for i in range(len(boxes)):
+                    x1,y1,x2,y2 = boxes[i]
+                    score = scores[i]
+                    cls = classes[i]
+                    self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
             
         self.refresh_page.emit()
         progress.close()
@@ -203,17 +240,27 @@ class ArchiverOptions(QWidget):
         progress.setWindowTitle("Processing files")
         progress.show()
         QApplication.processEvents()
+        QApplication.processEvents()
         file = file[0]
         copied = self.copy_folder([file])
+        if not copied:
+            progress.close()
+            self.state_manager.processing_running = False
+            return
         name = os.path.basename(copied[0])
+        self.database_manager.delete_single(name)
         self.detection_start.emit(copied[0])
         results = self.state_manager.results
         boxes,scores,classes = results
-        for i in range(len(boxes)):
-                x1,y1,x2,y2 = boxes[i]
-                score = scores[i]
-                cls = classes[i]
-                self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
+        if len(boxes) == 0:
+            if os.path.exists(copied[0]):
+                os.remove(copied[0])
+        else:
+            for i in range(len(boxes)):
+                    x1,y1,x2,y2 = boxes[i]
+                    score = scores[i]
+                    cls = classes[i]
+                    self.database_manager.add_image_to_table(name,self.state_manager.model_name,self.state_manager.class_names[int(cls)],float(score), float(x1),float(y1),float(x2),float(y2))
         progress.close()
         self.refresh_page.emit()
         self.state_manager.processing_running = False

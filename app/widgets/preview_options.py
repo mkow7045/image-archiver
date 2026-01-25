@@ -4,18 +4,31 @@ class PreviewOptions(QWidget):
     back_to_archiver = pyqtSignal()
     set_local_color = pyqtSignal(QColor)
     delete_selected_image = pyqtSignal()
+    conf_val_changed = pyqtSignal(float)
 
-    def __init__(self):
+    def __init__(self,state_manager):
         super().__init__()
         layout = QVBoxLayout()
 
+        self.state_manager = state_manager
+
         self.archiver = QPushButton("Back to archiver page")
-        self.set_color = QPushButton("Set bbox color")
+        self.set_color = QPushButton("Choose bounding box color for this image")
         self.delete_image = QPushButton("Delete this image")
 
         self.archiver.clicked.connect(self.back_to_archiver.emit)
         self.set_color.clicked.connect(self.get_color)
         self.delete_image.clicked.connect(self.delete_image_popup)
+
+        self.conf_label = QLabel(f"Confidence: 0%")
+        self.conf_slider = QSlider(Qt.Orientation.Horizontal)
+        self.conf_slider.setMinimum(0)
+        self.conf_slider.setMaximum(100)
+        self.conf_slider.setValue(0)
+        self.conf_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.conf_slider.setTickInterval(10)
+        self.conf_slider.valueChanged.connect(self.update_conf)
+        
 
         self.delete_image.setStyleSheet("""
             QPushButton {
@@ -28,14 +41,28 @@ class PreviewOptions(QWidget):
                                         }
                 
                                         """)
-
+        
+        layout.addStretch()
         layout.addWidget(self.archiver)
+        layout.addStretch()
         layout.addWidget(self.set_color)
+        layout.addStretch()
         layout.addWidget(self.delete_image)
+        layout.addStretch()
+        layout.addWidget(self.conf_label)
+        layout.addWidget(self.conf_slider)
+        layout.addStretch()
 
         
 
         self.setLayout(layout)
+
+    def update_conf(self, value):
+        self.state_manager.conf_bboxes = value / 100.0
+        self.conf_label.setText(f"Confidence: {value}%")
+
+
+
 
     def get_color(self):
         color = QColorDialog.getColor()
