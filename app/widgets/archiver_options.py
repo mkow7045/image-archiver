@@ -232,6 +232,9 @@ class ArchiverOptions(QWidget):
             
         self.refresh_page.emit()
         progress.close()
+        #avg_time = self.state_manager.avg_time / len(files) * 1000
+        #print(f"Average time per image: {avg_time:.2f} ms")
+        #self.state_manager.avg_time = 0
         self.state_manager.processing_running = False
 
     def process_file(self, file):

@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from common import *
+#import time
 
 
 class YOLODetector():
@@ -30,12 +31,25 @@ class YOLODetector():
         self.state_manager.class_names = self.model.names
         self.state_manager.model_name = model_name
 
+        #metrics = self.model.val(data='coco128.yaml')  
+        #print(f"\n{'='*50}")
+        #print(f"Model: {model_name}")
+        #print(f"mAP@0.5:0.95: {metrics.box.map:.4f}")
+        #print(f"mAP@0.5: {metrics.box.map50:.4f}")
+        #print(f"mAP@0.75: {metrics.box.map75:.4f}")
+        #print(f"Precision: {metrics.box.mp:.4f}")
+        #print(f"Recall: {metrics.box.mr:.4f}")
+        #print(f"{'='*50}\n")
 
 
     def run_detection(self,image_path):
         if(image_path and self.state_manager.busy != True):
             self.state_manager.busy = True
+
+            #start_time = time.time()
             results = self.model.predict(image_path, save=False, imgsz=640, conf = self.state_manager.conf, verbose = False)
+            #elapsed_time = time.time() - start_time
+            #self.state_manager.avg_time += elapsed_time
             r = results[0]
             boxes = r.boxes.xyxy.cpu().numpy()
             score = r.boxes.conf.cpu().numpy()

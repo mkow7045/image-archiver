@@ -20,7 +20,7 @@ class PreviewOptions(QWidget):
         self.set_color.clicked.connect(self.get_color)
         self.delete_image.clicked.connect(self.delete_image_popup)
 
-        self.conf_label = QLabel(f"Confidence: 0%")
+        self.conf_label = QLabel(f"Confidence: 0% - Won't draw boxes below score")
         self.conf_slider = QSlider(Qt.Orientation.Horizontal)
         self.conf_slider.setMinimum(0)
         self.conf_slider.setMaximum(100)
@@ -59,7 +59,7 @@ class PreviewOptions(QWidget):
 
     def update_conf(self, value):
         self.state_manager.conf_bboxes = value / 100.0
-        self.conf_label.setText(f"Confidence: {value}%")
+        self.conf_label.setText(f"Confidence: {value}% - Won't draw boxes below score")
 
 
 

@@ -8,7 +8,6 @@ class RCNNDetector():
     def __init__(self,model_name,state_manager):
         self.model_name = model_name
         self.state_manager = state_manager
-        self.model_name = model_name
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.weights = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT

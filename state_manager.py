@@ -27,6 +27,7 @@ class StateManager(QObject):
         self._theme = "dark"
         self.draw_only_selected = False
         self._conf_bboxes = 0.0
+        #self.avg_time = 0.0
 
     @property
     def conf_bboxes(self):
