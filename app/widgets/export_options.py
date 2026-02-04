@@ -152,6 +152,14 @@ class ExportOptions(QDialog):
         self.example_name.setText(text)
 
     def make_filename(self, classes,og_hash,priority_classes,filter_empty):
+        seen = set()
+        unique_classes = []
+        for c in classes:
+            if c not in seen:
+                unique_classes.append(c)
+                seen.add(c)
+
+        classes = unique_classes
         amount = self.num_classes.value()
         if amount > len(classes):
             amount = len(classes)
