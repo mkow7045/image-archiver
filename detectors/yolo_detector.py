@@ -31,15 +31,17 @@ class YOLODetector():
         self.state_manager.class_names = self.model.names
         self.state_manager.model_name = model_name
 
-        #metrics = self.model.val(data='coco128.yaml')  
-        #print(f"\n{'='*50}")
-        #print(f"Model: {model_name}")
-        #print(f"mAP@0.5:0.95: {metrics.box.map:.4f}")
-        #print(f"mAP@0.5: {metrics.box.map50:.4f}")
-        #print(f"mAP@0.75: {metrics.box.map75:.4f}")
-        #print(f"Precision: {metrics.box.mp:.4f}")
-        #print(f"Recall: {metrics.box.mr:.4f}")
-        #print(f"{'='*50}\n")
+        metrics = self.model.val(data=r'C:\Users\desu\Desktop\git\image-archiver\detectors\test_data.yaml')  
+        avg_inference_time = metrics.speed['inference']
+        print(f"\n{'='*50}")
+        print(f"Model: {model_name}")
+        print(f"mAP@0.5:0.95: {metrics.box.map:.4f}")
+        print(f"mAP@0.5: {metrics.box.map50:.4f}")
+        print(f"mAP@0.75: {metrics.box.map75:.4f}")
+        print(f"Precision: {metrics.box.mp:.4f}")
+        print(f"Recall: {metrics.box.mr:.4f}")
+        print(f"Time (inf):   {avg_inference_time:.2f} ms")
+        print(f"{'='*50}\n")
 
 
     def run_detection(self,image_path):

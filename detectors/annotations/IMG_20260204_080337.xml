@@ -1,0 +1,37 @@
+<annotation>
+	<folder>my-project-name</folder>
+	<filename>IMG_20260204_080337.jpg</filename>
+	<path>/my-project-name/IMG_20260204_080337.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>4624</width>
+		<height>3472</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>hairdrier</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1766</xmin>
+			<ymin>4</ymin>
+			<xmax>4624</xmax>
+			<ymax>2942</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>scissors</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>52</xmin>
+			<ymin>316</ymin>
+			<xmax>1674</xmax>
+			<ymax>2236</ymax>
+		</bndbox>
+	</object>
+</annotation>

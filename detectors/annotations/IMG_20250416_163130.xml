@@ -1,0 +1,37 @@
+<annotation>
+	<folder>my-project-name</folder>
+	<filename>IMG_20250416_163130.jpg</filename>
+	<path>/my-project-name/IMG_20250416_163130.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>3472</width>
+		<height>4624</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>cat</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1394</xmin>
+			<ymin>1839</ymin>
+			<xmax>2486</xmax>
+			<ymax>2797</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>bench</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>741</xmin>
+			<ymin>642</ymin>
+			<xmax>3472</xmax>
+			<ymax>4274</ymax>
+		</bndbox>
+	</object>
+</annotation>

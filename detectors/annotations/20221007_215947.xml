@@ -1,0 +1,37 @@
+<annotation>
+	<folder>my-project-name</folder>
+	<filename>20221007_215947.jpg</filename>
+	<path>/my-project-name/20221007_215947.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>4656</width>
+		<height>3492</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>chair</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3366</xmin>
+			<ymin>1530</ymin>
+			<xmax>4398</xmax>
+			<ymax>2901</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>couch</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1250</xmin>
+			<ymin>1384</ymin>
+			<xmax>2264</xmax>
+			<ymax>2394</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -101,6 +101,10 @@ class MainPage(QWidget):
         if(isinstance(self.detector, YOLODetector)):
             self.detector = RCNNDetector(model_name,self.state_manager)
         self.detector.set_model(model_name)
+        self.detector.validate(
+                images_dir=r'C:\Users\desu\Desktop\git\image-archiver\detectors\images',
+                annotations_dir=r'C:\Users\desu\Desktop\git\image-archiver\detectors\annotations'
+                )
 
     def load_yolo_model(self,model_name):
         if(isinstance(self.detector, RCNNDetector)):

@@ -3,6 +3,7 @@ import torch
 from torchvision import transforms
 from torchvision.models.detection import fasterrcnn_resnet50_fpn_v2, FasterRCNN_ResNet50_FPN_V2_Weights, fasterrcnn_mobilenet_v3_large_fpn, FasterRCNN_MobileNet_V3_Large_FPN_Weights, retinanet_resnet50_fpn, RetinaNet_ResNet50_FPN_Weights
 from PIL import Image
+from .rcnn_validator import validate_rcnn
 
 class RCNNDetector():
     def __init__(self,model_name,state_manager):
@@ -72,3 +73,12 @@ class RCNNDetector():
                 self.state_manager.results = (boxes,scores,classes)
 
                 self.state_manager.busy = False
+
+    def validate(self, images_dir, annotations_dir):
+        return validate_rcnn(
+            model=self.model,
+            images_dir=images_dir,
+            annotations_dir=annotations_dir,
+            class_names=self.state_manager.class_names,
+            device=self.device
+        )
