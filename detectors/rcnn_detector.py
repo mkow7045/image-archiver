@@ -6,45 +6,44 @@ from PIL import Image
 from .rcnn_validator import validate_rcnn
 
 class RCNNDetector():
-    def __init__(self,model_name,state_manager):
+    def __init__(self, model_name, state_manager):
         self.model_name = model_name
         self.state_manager = state_manager
-
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.weights = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
         
-        self.model = self.load_model()
+        # Initialize model and weights
+        self.model, self.weights = self.load_model(model_name)
         self.model.to(self.device)
         self.model.eval()
-
         
-
         self.state_manager.model_name = model_name
         self.state_manager.class_names = {i: name for i, name in enumerate(self.weights.meta["categories"])}
-
         self.transform = transforms.Compose([transforms.ToTensor()])
-
-        self.state_manager.model_name_changed.connect(self.set_model)
-
-
-    def load_model(self):
-        if self.model_name == "fasterrcnn_resnet50":
-            self.weights = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
-            return fasterrcnn_resnet50_fpn_v2(weights=self.weights)
-
-        elif self.model_name == "fasterrcnn_mobilenet":
-            self.weights = FasterRCNN_MobileNet_V3_Large_FPN_Weights.DEFAULT
-            return fasterrcnn_mobilenet_v3_large_fpn(weights=self.weights)
-
-        elif self.model_name == "retinanet_resnet50":
-            self.weights = RetinaNet_ResNet50_FPN_Weights.DEFAULT
-            return retinanet_resnet50_fpn(weights=self.weights)
-
+        
+    def load_model(self, model_name):
+        if model_name == "fasterrcnn_resnet50":
+            weights = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
+            model = fasterrcnn_resnet50_fpn_v2(weights=weights)
+        elif model_name == "fasterrcnn_mobilenet":
+            weights = FasterRCNN_MobileNet_V3_Large_FPN_Weights.DEFAULT
+            model = fasterrcnn_mobilenet_v3_large_fpn(weights=weights)
+        elif model_name == "retinanet_resnet50":
+            weights = RetinaNet_ResNet50_FPN_Weights.DEFAULT
+            model = retinanet_resnet50_fpn(weights=weights)
+        else:
+            raise ValueError(f"Unknown model: {model_name}")
+        
+        return model, weights
+    
     def set_model(self, model_name):
-        self.state_manager.model_name = model_name
-        self.model = self.load_model()
+        self.model_name = model_name
+        self.model, self.weights = self.load_model(model_name)
         self.model.to(self.device)
         self.model.eval()
+        
+        # Update state manager with new class names
+        self.state_manager.model_name = model_name
+        self.state_manager.class_names = {i: name for i, name in enumerate(self.weights.meta["categories"])}
 
         
         self.state_manager.class_names = {i: name for i, name in enumerate(self.weights.meta["categories"])}

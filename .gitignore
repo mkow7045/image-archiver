@@ -214,7 +214,7 @@ __marimo__/
 
 runs/
 
-images/
+#images/
 
 **/*.db
 
